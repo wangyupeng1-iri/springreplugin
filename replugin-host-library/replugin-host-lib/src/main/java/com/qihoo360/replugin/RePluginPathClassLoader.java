@@ -113,10 +113,10 @@ public class RePluginPathClassLoader extends PathClassLoader {
         }
     }
 
-    private void copyFieldValue(String field, ClassLoader orig) {
+    private void copyFieldValue(String fieldStr, ClassLoader orig) {
         try {
-            Field fieldFunc = ReflectUtils.getField(orig.getClass(), field);
-            if (fieldFunc == null) {
+            Field field = ReflectUtils.getField(orig.getClass(), fieldStr);
+            if (field == null) {
                 if (LOGR) {
                     LogRelease.e(TAG, "ReflectUtils.getField()=null  field=" + field);
                 }
@@ -124,14 +124,14 @@ public class RePluginPathClassLoader extends PathClassLoader {
             }
 
             // 删除final修饰符
-            ReflectUtils.removeFieldFinalModifier(fieldFunc);
+            ReflectUtils.removeFieldFinalModifier(field);
 
             // 复制Field中的值到this里
-            Object o = ReflectUtils.readField(fieldFunc, orig);
-            ReflectUtils.writeField(fieldFunc, this, o);
+            Object o = ReflectUtils.readField(field, orig);
+            ReflectUtils.writeField(field, this, o);
 
             if (LOG) {
-                Object test = ReflectUtils.readField(fieldFunc, this);
+                Object test = ReflectUtils.readField(field, this);
                 LogDebug.d(TAG, "copyFieldValue: Copied. f=" + field + "; actually=" + test + "; orig=" + o);
             }
         } catch (IllegalAccessException e) {
