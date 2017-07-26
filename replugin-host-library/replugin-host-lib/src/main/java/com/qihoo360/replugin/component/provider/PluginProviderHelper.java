@@ -23,7 +23,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.qihoo360.i.PluginsFactory;
+import com.qihoo360.i.PluginFactory;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.component.ComponentList;
 import com.qihoo360.replugin.helper.LogDebug;
@@ -138,7 +138,7 @@ public class PluginProviderHelper {
 
     private ContentProvider installProvider(PluginUri pu, String auth) {
         // 开始尝试获取插件的ProviderInfo
-        ComponentList col = PluginsFactory.queryPluginComponentList(pu.plugin);
+        ComponentList col = PluginFactory.queryPluginComponentList(pu.plugin);
         if (col == null) {
             if (LogDebug.LOG) {
                 Log.e(TAG, "installProvider(): Fetch Component List Error! auth=" + auth);
@@ -154,7 +154,7 @@ public class PluginProviderHelper {
         }
 
         // 通过ProviderInfo创建ContentProvider对象
-        Context plgc = PluginsFactory.queryPluginContext(pu.plugin);
+        Context plgc = PluginFactory.queryPluginContext(pu.plugin);
         if (plgc == null) {
             if (LogDebug.LOG) {
                 Log.e(TAG, "installProvider(): Fetch Context Error! auth=" + auth);

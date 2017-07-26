@@ -29,7 +29,7 @@ import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.qihoo360.i.PluginsFactory;
+import com.qihoo360.i.PluginFactory;
 import com.qihoo360.i.IModule;
 import com.qihoo360.i.IPlugin;
 import com.qihoo360.mobilesafe.core.BuildConfig;
@@ -376,12 +376,12 @@ class PluginLoader {
     final boolean loadEntryMethod(boolean log) {
         //
         try {
-            String className = PluginsFactory.PLUGIN_ENTRY_PACKAGE_PREFIX + "." + mPluginName + "." + PluginsFactory.PLUGIN_ENTRY_CLASS_NAME;
+            String className = PluginFactory.PLUGIN_ENTRY_PACKAGE_PREFIX + "." + mPluginName + "." + PluginFactory.PLUGIN_ENTRY_CLASS_NAME;
             Class<?> c = mClassLoader.loadClass(className);
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "found entry: className=" + className + ", loader=" + c.getClassLoader());
             }
-            mCreateMethod = c.getDeclaredMethod(PluginsFactory.PLUGIN_ENTRY_EXPORT_METHOD_NAME, PluginsFactory.PLUGIN_ENTRY_EXPORT_METHOD_PARAMS);
+            mCreateMethod = c.getDeclaredMethod(PluginFactory.PLUGIN_ENTRY_EXPORT_METHOD_NAME, PluginFactory.PLUGIN_ENTRY_EXPORT_METHOD_PARAMS);
         } catch (Throwable e) {
             if (log) {
                 if (LOGR) {
@@ -414,12 +414,12 @@ class PluginLoader {
     final boolean loadEntryMethod2() {
         //
         try {
-            String className = PluginsFactory.PLUGIN_ENTRY_PACKAGE_PREFIX + "." + mPluginName + "." + PluginsFactory.PLUGIN_ENTRY_CLASS_NAME;
+            String className = PluginFactory.PLUGIN_ENTRY_PACKAGE_PREFIX + "." + mPluginName + "." + PluginFactory.PLUGIN_ENTRY_CLASS_NAME;
             Class<?> c = mClassLoader.loadClass(className);
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "found entry: className=" + className + ", loader=" + c.getClassLoader());
             }
-            mCreateMethod2 = c.getDeclaredMethod(PluginsFactory.PLUGIN_ENTRY_EXPORT_METHOD_NAME, PluginsFactory.PLUGIN_ENTRY_EXPORT_METHOD2_PARAMS);
+            mCreateMethod2 = c.getDeclaredMethod(PluginFactory.PLUGIN_ENTRY_EXPORT_METHOD_NAME, PluginFactory.PLUGIN_ENTRY_EXPORT_METHOD2_PARAMS);
         } catch (Throwable e) {
             // 老版本的插件才会用到这个方法，因后面还有新版本的load方式，这里不打log
 //            if (LOGR) {
@@ -432,12 +432,12 @@ class PluginLoader {
     final boolean loadEntryMethod3() {
         //
         try {
-            String className = PluginsFactory.REPLUGIN_LIBRARY_ENTRY_PACKAGE_PREFIX + "." + PluginsFactory.PLUGIN_ENTRY_CLASS_NAME;
+            String className = PluginFactory.REPLUGIN_LIBRARY_ENTRY_PACKAGE_PREFIX + "." + PluginFactory.PLUGIN_ENTRY_CLASS_NAME;
             Class<?> c = mClassLoader.loadClass(className);
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "found entry: className=" + className + ", loader=" + c.getClassLoader());
             }
-            mCreateMethod2 = c.getDeclaredMethod(PluginsFactory.PLUGIN_ENTRY_EXPORT_METHOD_NAME, PluginsFactory.PLUGIN_ENTRY_EXPORT_METHOD2_PARAMS);
+            mCreateMethod2 = c.getDeclaredMethod(PluginFactory.PLUGIN_ENTRY_EXPORT_METHOD_NAME, PluginFactory.PLUGIN_ENTRY_EXPORT_METHOD2_PARAMS);
         } catch (Throwable e) {
             if (LOGR) {
                 LogRelease.e(PLUGIN_TAG, e.getMessage(), e);

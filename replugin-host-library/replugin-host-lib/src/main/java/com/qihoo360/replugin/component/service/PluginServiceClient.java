@@ -29,7 +29,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
-import com.qihoo360.i.PluginsFactory;
+import com.qihoo360.i.PluginFactory;
 import com.qihoo360.loader2.PluginMgrFacade;
 import com.qihoo360.replugin.component.ComponentList;
 import com.qihoo360.replugin.component.service.server.IPluginServiceServer;
@@ -299,7 +299,7 @@ public class PluginServiceClient {
         }
         String pn = cn.getPackageName();
         // 开始尝试获取插件的ServiceInfo
-        ComponentList col = PluginsFactory.queryPluginComponentList(pn);
+        ComponentList col = PluginFactory.queryPluginComponentList(pn);
         if (col == null) {
             if (LogDebug.LOG) {
                 Log.e(TAG, "getProcessByComponentName(): Fetch Component List Error! pn=" + pn);
@@ -325,7 +325,7 @@ public class PluginServiceClient {
      */
     private static ComponentName getServiceComponentFromIntent(Context context, Intent intent) {
         ClassLoader cl = context.getClassLoader();
-        String plugin = PluginsFactory.fetchPluginName(cl);
+        String plugin = PluginFactory.fetchPluginName(cl);
 
         /* Intent 中已指定 ComponentName */
         if (intent.getComponent() != null) {
@@ -335,7 +335,7 @@ public class PluginServiceClient {
         } else {
             /* Intent 中已指定 Action，根据 action 解析出 ServiceInfo */
             if (!TextUtils.isEmpty(intent.getAction())) {
-                ComponentList componentList = PluginsFactory.queryPluginComponentList(plugin);
+                ComponentList componentList = PluginFactory.queryPluginComponentList(plugin);
                 if (componentList != null) {
                     // 返回 ServiceInfo 和 Service 所在的插件
                     Pair<ServiceInfo, String> pair = componentList.getServiceAndPluginByIntent(context, intent);

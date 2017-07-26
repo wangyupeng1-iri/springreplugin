@@ -285,7 +285,7 @@ public class RePluginInternal {
         static void initLocked(final ClassLoader classLoader) {
 
             final String factory2 = "com.qihoo360.i.Factory2";
-            final String factory = "com.qihoo360.i.Factory";
+            final String pluginFactory = "com.qihoo360.i.PluginFactory";
 
             // 初始化Factory2相关方法
             createActivityContext = new MethodInvoker(classLoader, factory2, "createActivityContext", new Class<?>[]{Activity.class, Context.class});
@@ -297,7 +297,7 @@ public class RePluginInternal {
             startActivityForResult = new MethodInvoker(classLoader, factory2, "startActivityForResult", new Class<?>[]{Activity.class, Intent.class, int.class, Bundle.class});
 
             // 初始化Factory相关方法
-            loadPluginActivity = new MethodInvoker(classLoader, factory, "loadPluginActivity", new Class<?>[]{Intent.class, String.class, String.class, int.class});
+            loadPluginActivity = new MethodInvoker(classLoader, pluginFactory, "loadPluginActivity", new Class<?>[]{Intent.class, String.class, String.class, int.class});
         }
     }
 }

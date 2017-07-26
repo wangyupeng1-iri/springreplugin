@@ -25,7 +25,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import com.qihoo360.i.PluginsFactory;
+import com.qihoo360.i.PluginFactory;
 import com.qihoo360.i.Factory2;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.replugin.utils.ReflectUtils;
@@ -44,7 +44,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
-import static com.qihoo360.i.PluginsFactory.loadPluginActivity;
+import static com.qihoo360.i.PluginFactory.loadPluginActivity;
 import static com.qihoo360.replugin.helper.LogDebug.LOG;
 import static com.qihoo360.replugin.helper.LogDebug.PLUGIN_TAG;
 import static com.qihoo360.replugin.helper.LogRelease.LOGR;
@@ -165,7 +165,7 @@ public class PluginLibraryInternalProxy {
         PluginMgr.cleanIntentPluginParams(intent);
 
         // 调用“特殊版”的startActivity，不让自动填写ComponentName，防止外界再用时出错
-        return PluginsFactory.startActivityWithNoInjectCN(context, intent, plugin, name, process);
+        return PluginFactory.startActivityWithNoInjectCN(context, intent, plugin, name, process);
     }
 
     // 通过Activity坑位来获取插件名

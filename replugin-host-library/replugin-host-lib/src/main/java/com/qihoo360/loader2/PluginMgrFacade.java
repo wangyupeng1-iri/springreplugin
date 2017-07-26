@@ -23,7 +23,7 @@ import android.content.Intent;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
-import com.qihoo360.i.PluginsFactory;
+import com.qihoo360.i.PluginFactory;
 import com.qihoo360.i.Factory2;
 import com.qihoo360.i.IModule;
 import com.qihoo360.loader.utils.PatchClassLoaderUtils;
@@ -73,7 +73,7 @@ public class PluginMgrFacade {
         //关键点：插件管理器初始化
         sPluginMgr.init();
 
-        PluginsFactory.sPluginManager = PluginMgrFacade.getLocal();
+        PluginFactory.sPluginManager = PluginMgrFacade.getLocal();
         Factory2.sPLProxy = PluginMgrFacade.getInternal();
 
         PatchClassLoaderUtils.patch(application);

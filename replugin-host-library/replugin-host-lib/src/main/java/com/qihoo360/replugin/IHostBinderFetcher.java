@@ -21,7 +21,7 @@ import android.os.IBinder;
 /**
  * 用来实现主程序提供IBinder给其他插件
  * <p>
- * 插件获取方法：PluginsFactory.query("main", "IShare")，返回值：IBinder
+ * 插件获取方法：PluginFactory.query("main", "IShare")，返回值：IBinder
  * <p>
  * TODO 未来会废弃Factory类，并做些调整
  *

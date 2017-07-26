@@ -21,7 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.qihoo360.i.PluginsFactory;
+import com.qihoo360.i.PluginFactory;
 import com.qihoo360.mobilesafe.api.Tasks;
 import com.qihoo360.replugin.helper.LogDebug;
 
@@ -51,7 +51,7 @@ public class PluginReceiverHelper {
         }
 
         // 使用插件的 Context 对象
-        final Context pContext = PluginsFactory.queryPluginContext(plugin);
+        final Context pContext = PluginFactory.queryPluginContext(plugin);
         if (pContext == null) {
             return;
         }

@@ -21,7 +21,7 @@ import android.content.Context;
 import android.content.pm.ComponentInfo;
 import android.text.TextUtils;
 
-import com.qihoo360.i.PluginsFactory;
+import com.qihoo360.i.PluginFactory;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.RePluginConstants;
@@ -67,7 +67,7 @@ public class PluginClientHelper {
 
         // 根据Context的ClassLoader来看到底属于哪个插件，还是只是主程序
         ClassLoader cl = c.getClassLoader();
-        String pn = PluginsFactory.fetchPluginName(cl);
+        String pn = PluginFactory.fetchPluginName(cl);
         if (TextUtils.isEmpty(pn)) {
             // 获得了无效的插件信息，这种情况很少见，故打出错误信息，什么也不做
             if (LOGR) {

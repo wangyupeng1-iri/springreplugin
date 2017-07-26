@@ -22,7 +22,7 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 
-import com.qihoo360.i.PluginsFactory;
+import com.qihoo360.i.PluginFactory;
 import com.qihoo360.mobilesafe.parser.manifest.ManifestParser;
 import com.qihoo360.replugin.helper.LogDebug;
 
@@ -58,7 +58,7 @@ public class IntentMatcherHelper {
         }
 
         String activity = doMatchIntent(context, intent, ManifestParser.INS.getActivityFilterMap(plugin));
-        return PluginsFactory.queryActivityInfo(plugin, activity);
+        return PluginFactory.queryActivityInfo(plugin, activity);
     }
 
     /**

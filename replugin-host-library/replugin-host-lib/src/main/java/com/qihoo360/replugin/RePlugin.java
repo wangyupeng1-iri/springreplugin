@@ -33,7 +33,7 @@ import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
-import com.qihoo360.i.PluginsFactory;
+import com.qihoo360.i.PluginFactory;
 import com.qihoo360.i.Factory2;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.loader2.CertUtils;
@@ -223,7 +223,7 @@ public class RePlugin {
         }
         String plugin = cn.getPackageName();
         String cls = cn.getClassName();
-        return PluginsFactory.startActivityWithNoInjectCN(context, intent, plugin, cls, IPluginManager.PROCESS_AUTO);
+        return PluginFactory.startActivityWithNoInjectCN(context, intent, plugin, cls, IPluginManager.PROCESS_AUTO);
     }
 
     /**
@@ -238,7 +238,7 @@ public class RePlugin {
      */
     public static boolean startActivity(Context context, Intent intent, String pluginName, String activity) {
         // TODO 先用旧的开启Activity方案，以后再优化
-        return PluginsFactory.startActivity(context, intent, pluginName, activity, IPluginManager.PROCESS_AUTO);
+        return PluginFactory.startActivity(context, intent, pluginName, activity, IPluginManager.PROCESS_AUTO);
     }
 
     /**
@@ -251,7 +251,7 @@ public class RePlugin {
      * @since 2.1.3
      */
     public static boolean startActivityForResult(Activity activity, Intent intent, int requestCode) {
-        return PluginsFactory.startActivityForResult(activity, intent, requestCode, null);
+        return PluginFactory.startActivityForResult(activity, intent, requestCode, null);
     }
 
     /**
@@ -265,7 +265,7 @@ public class RePlugin {
      * @since 2.1.3
      */
     public static boolean startActivityForResult(Activity activity, Intent intent, int requestCode, Bundle options) {
-        return PluginsFactory.startActivityForResult(activity, intent, requestCode, options);
+        return PluginFactory.startActivityForResult(activity, intent, requestCode, options);
     }
 
     /**
@@ -352,7 +352,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static ComponentList fetchComponentList(String pluginName) {
-        return PluginsFactory.queryPluginComponentList(pluginName);
+        return PluginFactory.queryPluginComponentList(pluginName);
     }
 
     /**
@@ -366,7 +366,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static PackageInfo fetchPackageInfo(String pluginName) {
-        return PluginsFactory.queryPluginPackageInfo(pluginName);
+        return PluginFactory.queryPluginPackageInfo(pluginName);
     }
 
     /**
@@ -380,7 +380,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static Resources fetchResources(String pluginName) {
-        return PluginsFactory.queryPluginResouces(pluginName);
+        return PluginFactory.queryPluginResouces(pluginName);
     }
 
     /**
@@ -393,7 +393,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static ClassLoader fetchClassLoader(String pluginName) {
-        return PluginsFactory.queryPluginClassLoader(pluginName);
+        return PluginFactory.queryPluginClassLoader(pluginName);
     }
 
     /**
@@ -406,7 +406,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static Context fetchContext(String pluginName) {
-        return PluginsFactory.queryPluginContext(pluginName);
+        return PluginFactory.queryPluginContext(pluginName);
     }
 
     /**
@@ -426,7 +426,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static IBinder fetchBinder(String pluginName, String module, String process) {
-        return PluginsFactory.query(pluginName, module, Integer.parseInt(process));
+        return PluginFactory.query(pluginName, module, Integer.parseInt(process));
     }
 
     /**
@@ -445,7 +445,7 @@ public class RePlugin {
      * @since 2.1.0
      */
     public static IBinder fetchBinder(String pluginName, String module) {
-        return PluginsFactory.query(pluginName, module);
+        return PluginFactory.query(pluginName, module);
     }
 
     /**
@@ -458,7 +458,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static String fetchPluginNameByClassLoader(ClassLoader cl) {
-        return PluginsFactory.fetchPluginName(cl);
+        return PluginFactory.fetchPluginName(cl);
     }
 
     /**

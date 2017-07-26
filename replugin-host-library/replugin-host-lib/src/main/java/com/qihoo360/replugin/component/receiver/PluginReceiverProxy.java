@@ -23,7 +23,7 @@ import android.content.pm.ActivityInfo;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.qihoo360.i.PluginsFactory;
+import com.qihoo360.i.PluginFactory;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.loader2.IPluginClient;
 import com.qihoo360.loader2.IPluginHost;
@@ -123,7 +123,7 @@ public class PluginReceiverProxy extends BroadcastReceiver {
         if (!mReceiverProcess.containsKey(key)) {
 
             // 获得 ActivityInfo
-            ComponentList components = PluginsFactory.queryPluginComponentList(plugin);
+            ComponentList components = PluginFactory.queryPluginComponentList(plugin);
             if (components != null) {
 
                 Map<String, ActivityInfo> receiverMap = components.getReceiverMap();

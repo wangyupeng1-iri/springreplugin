@@ -29,7 +29,7 @@ import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
-import com.qihoo360.i.PluginsFactory;
+import com.qihoo360.i.PluginFactory;
 import com.qihoo360.i.IModule;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.replugin.utils.ReflectUtils;
@@ -873,7 +873,7 @@ class PluginMgr {
                 boolean load = false;
                 for (String a : args) {
                     if (load) {
-                        Context c = PluginsFactory.queryPluginContext(a);
+                        Context c = PluginFactory.queryPluginContext(a);
                         writer.println("plugin.c=" + c);
                         return;
                     }
@@ -958,7 +958,7 @@ class PluginMgr {
                     if (!TextUtils.isEmpty(plugin) && !TextUtils.isEmpty(activity)) {
                         Intent intent = new Intent();
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        PluginsFactory.startActivity(mContext, intent, plugin, activity, IPluginManager.PROCESS_AUTO);
+                        PluginFactory.startActivity(mContext, intent, plugin, activity, IPluginManager.PROCESS_AUTO);
                     } else {
                         if (LOG) {
                             LogDebug.d(PLUGIN_TAG, "need {plugin} and {activity}");
