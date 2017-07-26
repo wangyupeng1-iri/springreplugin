@@ -92,7 +92,7 @@ public class PluginStatusController {
      */
     public static int getStatus(String pn) {
         // 注意：不能使用MP.getPlugin来获取版本号，因为此时插件已“无效”，自然不会有PluginInfo
-        // PluginInfo pi = MP.getPlugin(pn);
+        // PluginInfo pi = RePluginOS.getPlugin(pn);
         return getStatus(pn, -1);
     }
 

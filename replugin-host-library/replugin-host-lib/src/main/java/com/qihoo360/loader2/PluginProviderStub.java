@@ -76,7 +76,7 @@ public class PluginProviderStub {
         }
 
         if (SELECTION_MAIN_BINDER.equals(selection)) {
-            return BinderCursor.queryBinder(PMF.sPluginMgr.getHostBinder());
+            return BinderCursor.queryBinder(PluginMgrFacade.sPluginMgr.getHostBinder());
         }
 
         if (SELECTION_MAIN_PREF.equals(selection)) {
@@ -112,20 +112,20 @@ public class PluginProviderStub {
             long cookie = values.getAsLong(KEY_COOKIE);
 
             // 首次
-            if (PMF.sPluginMgr.mLocalCookie == 0L) {
+            if (PluginMgrFacade.sPluginMgr.mLocalCookie == 0L) {
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "set cookie: " + cookie);
                 }
                 //
-                PMF.sPluginMgr.mLocalCookie = cookie;
+                PluginMgrFacade.sPluginMgr.mLocalCookie = cookie;
             } else {
                 // 常驻进程重新启动了
-                if (PMF.sPluginMgr.mLocalCookie != cookie) {
+                if (PluginMgrFacade.sPluginMgr.mLocalCookie != cookie) {
                     if (LOG) {
                         LogDebug.d(PLUGIN_TAG, "reset cookie: " + cookie);
                     }
                     //
-                    PMF.sPluginMgr.mLocalCookie = cookie;
+                    PluginMgrFacade.sPluginMgr.mLocalCookie = cookie;
                     //
                     PluginProcessMain.installHost();
                 }
@@ -192,7 +192,7 @@ public class PluginProviderStub {
         //
         ContentValues values = new ContentValues();
         values.put(KEY_METHOD, METHOD_START_PROCESS);
-        values.put(KEY_COOKIE, PMF.sPluginMgr.mLocalCookie);
+        values.put(KEY_COOKIE, PluginMgrFacade.sPluginMgr.mLocalCookie);
         Uri uri = context.getContentResolver().insert(ProcessPitProviderBase.buildUri(index), values);
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "proxyStartPluginProcess insert.rc=" + (uri != null ? uri.toString() : "null"));

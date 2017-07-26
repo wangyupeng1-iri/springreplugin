@@ -20,7 +20,7 @@ import android.os.Build;
 
 import com.qihoo360.replugin.utils.ReflectUtils;
 import com.qihoo360.loader.utils.StringUtils;
-import com.qihoo360.loader2.PMF;
+import com.qihoo360.loader2.PluginMgrFacade;
 import com.qihoo360.replugin.base.IPC;
 import com.qihoo360.replugin.helper.LogDebug;
 import com.qihoo360.replugin.helper.LogRelease;
@@ -38,6 +38,7 @@ import static com.qihoo360.replugin.helper.LogDebug.PLUGIN_TAG;
 import static com.qihoo360.replugin.helper.LogRelease.LOGR;
 
 /**
+ * 关键点：替换classloader,偷梁换柱
  * 宿主的ClassLoader，插件框架的核心之一
  * <p>
  * 注意：为了兼容Android 7.0以上的LoadedApk.updateApplicationInfo中，对addDexPath方法的依赖，
@@ -45,9 +46,9 @@ import static com.qihoo360.replugin.helper.LogRelease.LOGR;
  *
  * @author RePlugin Team
  */
-public class RePluginClassLoader extends PathClassLoader {
+public class RePluginPathClassLoader extends PathClassLoader {
 
-    private static final String TAG = "RePluginClassLoader";
+    private static final String TAG = "RePluginPathClassLoader";
 
     private final ClassLoader mOrig;
 
@@ -64,7 +65,7 @@ public class RePluginClassLoader extends PathClassLoader {
 
     private Method getPackageMethod;
 
-    public RePluginClassLoader(ClassLoader parent, ClassLoader orig) {
+    public RePluginPathClassLoader(ClassLoader parent, ClassLoader orig) {
 
         // 由于PathClassLoader在初始化时会做一些Dir的处理，所以这里必须要传一些内容进来
         // 但我们最终不用它，而是拷贝所有的Fields
@@ -74,7 +75,7 @@ public class RePluginClassLoader extends PathClassLoader {
         // 将原来宿主里的关键字段，拷贝到这个对象上，这样骗系统以为用的还是以前的东西（尤其是DexPathList）
         // 注意，这里用的是“浅拷贝”
         // Added by Jiongxuan Zhang
-        copyFromOriginal(orig);
+        copyKeyFieldFromOriginal(orig);
 
         initMethods(orig);
     }
@@ -91,9 +92,9 @@ public class RePluginClassLoader extends PathClassLoader {
         getPackageMethod.setAccessible(true);
     }
 
-    private void copyFromOriginal(ClassLoader orig) {
+    private void copyKeyFieldFromOriginal(ClassLoader orig) {
         if (LOG && IPC.isPersistentProcess()) {
-            LogDebug.d(TAG, "copyFromOriginal: Fields=" + StringUtils.toStringWithLines(ReflectUtils.getAllFieldsList(orig.getClass())));
+            LogDebug.d(TAG, "copyKeyFieldFromOriginal: Fields=" + StringUtils.toStringWithLines(ReflectUtils.getAllFieldsList(orig.getClass())));
         }
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) {
@@ -114,28 +115,28 @@ public class RePluginClassLoader extends PathClassLoader {
 
     private void copyFieldValue(String field, ClassLoader orig) {
         try {
-            Field f = ReflectUtils.getField(orig.getClass(), field);
-            if (f == null) {
+            Field fieldFunc = ReflectUtils.getField(orig.getClass(), field);
+            if (fieldFunc == null) {
                 if (LOGR) {
-                    LogRelease.e(PLUGIN_TAG, "rpcl.cfv: null! f=" + field);
+                    LogRelease.e(TAG, "ReflectUtils.getField()=null  field=" + field);
                 }
                 return;
             }
 
             // 删除final修饰符
-            ReflectUtils.removeFieldFinalModifier(f);
+            ReflectUtils.removeFieldFinalModifier(fieldFunc);
 
             // 复制Field中的值到this里
-            Object o = ReflectUtils.readField(f, orig);
-            ReflectUtils.writeField(f, this, o);
+            Object o = ReflectUtils.readField(fieldFunc, orig);
+            ReflectUtils.writeField(fieldFunc, this, o);
 
             if (LOG) {
-                Object test = ReflectUtils.readField(f, this);
+                Object test = ReflectUtils.readField(fieldFunc, this);
                 LogDebug.d(TAG, "copyFieldValue: Copied. f=" + field + "; actually=" + test + "; orig=" + o);
             }
         } catch (IllegalAccessException e) {
             if (LOGR) {
-                LogRelease.e(PLUGIN_TAG, "rpcl.cfv: fail! f=" + field);
+                LogDebug.d(TAG, "rpcl.cfv: fail! f=" + field);
             }
         }
     }
@@ -144,7 +145,7 @@ public class RePluginClassLoader extends PathClassLoader {
     protected Class<?> loadClass(String className, boolean resolve) throws ClassNotFoundException {
         //
         Class<?> c = null;
-        c = PMF.loadClass(className, resolve);
+        c = PluginMgrFacade.loadClass(className, resolve);
         if (c != null) {
             return c;
         }

@@ -20,7 +20,7 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 
 import com.qihoo360.loader2.IPluginHost;
-import com.qihoo360.loader2.MP;
+import com.qihoo360.loader2.RePluginOS;
 import com.qihoo360.replugin.base.IPC;
 import com.qihoo360.replugin.helper.LogDebug;
 import com.qihoo360.replugin.helper.LogRelease;
@@ -135,7 +135,7 @@ public class PluginManagerProxy {
      * @param used 插件是否已被使用
      */
     public static void updateUsedIfNeeded(String pluginName, boolean used) throws RemoteException {
-        PluginInfo pi = MP.getPlugin(pluginName, false);
+        PluginInfo pi = RePluginOS.getPlugin(pluginName, false);
         if (pi == null) {
             // 不太可能到这里
             return;

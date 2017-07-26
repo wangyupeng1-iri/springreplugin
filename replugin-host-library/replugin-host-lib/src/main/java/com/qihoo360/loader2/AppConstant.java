@@ -21,7 +21,7 @@ import com.qihoo360.replugin.helper.HostConfigHelper;
 /**
  * @author RePlugin Team
  */
-public class Constant {
+public class AppConstant {
 
     /**
      * HOST向下兼容版本

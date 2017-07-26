@@ -37,7 +37,7 @@ import static com.qihoo360.replugin.helper.LogDebug.PLUGIN_TAG;
  */
 public class PluginManager {
 
-    private static final Pattern PROCESS_NAME_PATTERN = Pattern.compile(Constant.STUB_PROCESS_SUFFIX_PATTERN);
+    private static final Pattern PROCESS_NAME_PATTERN = Pattern.compile(AppConstant.STUB_PROCESS_SUFFIX_PATTERN);
 
     public static final int PROCESS_AUTO = IPluginManager.PROCESS_AUTO;
 
@@ -59,7 +59,7 @@ public class PluginManager {
      * @return
      */
     public static final boolean isPluginProcess() {
-        return sPluginProcessIndex >= 0 && sPluginProcessIndex < Constant.STUB_PROCESS_COUNT;
+        return sPluginProcessIndex >= 0 && sPluginProcessIndex < AppConstant.STUB_PROCESS_COUNT;
     }
 
     public static final boolean isValidActivityProcess(int process) {
@@ -73,7 +73,7 @@ public class PluginManager {
      * @return
      */
     static final boolean isPluginProcess(int index) {
-        return index >= 0 && index < Constant.STUB_PROCESS_COUNT;
+        return index >= 0 && index < AppConstant.STUB_PROCESS_COUNT;
     }
 
     static final int getPluginProcessIndex() {

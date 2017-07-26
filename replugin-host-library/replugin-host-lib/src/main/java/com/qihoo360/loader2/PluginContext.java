@@ -62,7 +62,7 @@ public class PluginContext extends ContextThemeWrapper {
 
     private final String mPlugin;
 
-    private final Loader mLoader;
+    private final PluginLoader mLoader;
 
     private final Object mSync = new Object();
 
@@ -84,7 +84,7 @@ public class PluginContext extends ContextThemeWrapper {
         }
     };
 
-    public PluginContext(Context base, int themeres, ClassLoader cl, Resources r, String plugin, Loader loader) {
+    public PluginContext(Context base, int themeres, ClassLoader cl, Resources r, String plugin, PluginLoader loader) {
         super(base, themeres);
 
         mNewClassLoader = cl;
@@ -312,16 +312,16 @@ public class PluginContext extends ContextThemeWrapper {
      * @return
      */
     private final File getDataDirFile() {
-        // 原本用 getDir(Constant.LOCAL_PLUGIN_DATA_SUB_DIR)
-        // 由于有些模块的数据写死在files目录下，这里不得已改为getFilesDir + Constant.LOCAL_PLUGIN_DATA_SUB_DIR
-        // File dir = getApplicationContext().getDir(Constant.LOCAL_PLUGIN_DATA_SUB_DIR, 0);
+        // 原本用 getDir(AppConstant.LOCAL_PLUGIN_DATA_SUB_DIR)
+        // 由于有些模块的数据写死在files目录下，这里不得已改为getFilesDir + AppConstant.LOCAL_PLUGIN_DATA_SUB_DIR
+        // File dir = getApplicationContext().getDir(AppConstant.LOCAL_PLUGIN_DATA_SUB_DIR, 0);
 
         // files
         // huchangqing getApplicationContext()会返回null
         File dir0 = getBaseContext().getFilesDir();
 
         // v3 data
-        File dir = new File(dir0, Constant.LOCAL_PLUGIN_DATA_SUB_DIR);
+        File dir = new File(dir0, AppConstant.LOCAL_PLUGIN_DATA_SUB_DIR);
         if (!dir.exists()) {
             if (!dir.mkdir()) {
                 if (LOGR) {

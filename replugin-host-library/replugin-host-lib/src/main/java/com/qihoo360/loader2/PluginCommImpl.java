@@ -68,9 +68,9 @@ public class PluginCommImpl {
     /**
      *
      */
-    PmBase mPluginMgr;
+    PluginMgr mPluginMgr;
 
-    PluginCommImpl(Context context, PmBase pm) {
+    PluginCommImpl(Context context, PluginMgr pm) {
         mContext = context;
         mPluginMgr = pm;
     }
@@ -83,7 +83,7 @@ public class PluginCommImpl {
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "isPluginLoaded: name=" + name);
         }
-        Plugin plugin = mPluginMgr.getPlugin(name);
+        AllPluginsInfoPool plugin = mPluginMgr.getPlugin(name);
         if (plugin == null) {
             return false;
         }
@@ -106,7 +106,7 @@ public class PluginCommImpl {
             return modules.get(c.getName());
         }
 
-        Plugin p = mPluginMgr.loadAppPlugin(name);
+        AllPluginsInfoPool p = mPluginMgr.loadAppPlugin(name);
         if (p == null) {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "query: not found plugin,  name=" + name + " class=" + c.getName());
@@ -138,7 +138,7 @@ public class PluginCommImpl {
             }
         }
 
-        Plugin p = mPluginMgr.loadAppPlugin(name);
+        AllPluginsInfoPool p = mPluginMgr.loadAppPlugin(name);
         if (p == null) {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "query: not found plugin,  name=" + name + " binder=" + binder);
@@ -193,9 +193,9 @@ public class PluginCommImpl {
      * @return 插件的context，可通过此context得到插件的ClassLoader
      */
     public Context queryPluginContext(String name) {
-        Plugin p = mPluginMgr.loadAppPlugin(name);
+        AllPluginsInfoPool p = mPluginMgr.loadAppPlugin(name);
         if (p != null) {
-            return p.mLoader.mPkgContext;
+            return p.mPluginLoader.mPkgContext;
         }
 
         if (LOG) {
@@ -213,14 +213,14 @@ public class PluginCommImpl {
      */
     public Resources queryPluginResouces(String name) {
         // 先从缓存获取
-        Resources resources = Plugin.queryCachedResources(Plugin.queryCachedFilename(name));
+        Resources resources = AllPluginsInfoPool.queryCachedResources(AllPluginsInfoPool.queryCachedFilename(name));
         if (resources != null) {
             return resources;
         }
 
-        Plugin p = mPluginMgr.loadResourcePlugin(name, this);
+        AllPluginsInfoPool p = mPluginMgr.loadResourcePlugin(name, this);
         if (p != null) {
-            return p.mLoader.mPkgResources;
+            return p.mPluginLoader.mPkgResources;
         }
 
         if (LOG) {
@@ -238,14 +238,14 @@ public class PluginCommImpl {
      */
     public PackageInfo queryPluginPackageInfo(String name) {
         // 先从缓存获取
-        PackageInfo packageInfo = Plugin.queryCachedPackageInfo(Plugin.queryCachedFilename(name));
+        PackageInfo packageInfo = AllPluginsInfoPool.queryCachedPackageInfo(AllPluginsInfoPool.queryCachedFilename(name));
         if (packageInfo != null) {
             return packageInfo;
         }
 
-        Plugin p = mPluginMgr.loadPackageInfoPlugin(name, this);
+        AllPluginsInfoPool p = mPluginMgr.loadPackageInfoPlugin(name, this);
         if (p != null) {
-            return p.mLoader.mPackageInfo;
+            return p.mPluginLoader.mPackageInfo;
         }
 
         if (LOG) {
@@ -265,7 +265,7 @@ public class PluginCommImpl {
      */
     public PackageInfo queryPluginPackageInfo(String pkgName, int flags) {
         // 根据 pkgName 取得 pluginName
-        String pluginName = Plugin.queryPluginNameByPkgName(pkgName);
+        String pluginName = AllPluginsInfoPool.queryPluginNameByPkgName(pkgName);
         if (!TextUtils.isEmpty(pluginName)) {
             return queryPluginPackageInfo(pluginName);
         }
@@ -280,14 +280,14 @@ public class PluginCommImpl {
      */
     public ComponentList queryPluginComponentList(String name) {
         // 先从缓存获取
-        ComponentList cl = Plugin.queryCachedComponentList(Plugin.queryCachedFilename(name));
+        ComponentList cl = AllPluginsInfoPool.queryCachedComponentList(AllPluginsInfoPool.queryCachedFilename(name));
         if (cl != null) {
             return cl;
         }
 
-        Plugin p = mPluginMgr.loadPackageInfoPlugin(name, this);
+        AllPluginsInfoPool p = mPluginMgr.loadPackageInfoPlugin(name, this);
         if (p != null) {
-            return p.mLoader.mComponents;
+            return p.mPluginLoader.mComponents;
         }
 
         if (LOG) {
@@ -305,14 +305,14 @@ public class PluginCommImpl {
      */
     public ClassLoader queryPluginClassLoader(String name) {
         // 先从缓存获取
-        ClassLoader cl = Plugin.queryCachedClassLoader(Plugin.queryCachedFilename(name));
+        ClassLoader cl = AllPluginsInfoPool.queryCachedClassLoader(AllPluginsInfoPool.queryCachedFilename(name));
         if (cl != null) {
             return cl;
         }
 
-        Plugin p = mPluginMgr.loadDexPlugin(name, this);
+        AllPluginsInfoPool p = mPluginMgr.loadDexPlugin(name, this);
         if (p != null) {
-            return p.mLoader.mClassLoader;
+            return p.mPluginLoader.mClassLoader;
         }
 
         if (LOG) {
@@ -332,9 +332,9 @@ public class PluginCommImpl {
      */
     public ClassLoader loadPluginClassLoader(PluginInfo pi) {
         // 不从缓存中获取，而是直接初始化ClassLoader
-        Plugin p = mPluginMgr.loadPlugin(pi, this, Plugin.LOAD_DEX, false);
+        AllPluginsInfoPool p = mPluginMgr.loadPlugin(pi, this, AllPluginsInfoPool.LOAD_DEX, false);
         if (p != null) {
-            return p.mLoader.mClassLoader;
+            return p.mPluginLoader.mClassLoader;
         }
 
         if (LOG) {
@@ -428,7 +428,7 @@ public class PluginCommImpl {
             }
 
             // 容器选择（启动目标进程）
-            IPluginClient client = MP.startPluginProcess(plugin, process, info);
+            IPluginClient client = RePluginOS.startPluginProcess(plugin, process, info);
             if (client == null) {
                 return null;
             }
@@ -449,7 +449,7 @@ public class PluginCommImpl {
             return null;
         }
 
-        PmBase.cleanIntentPluginParams(intent);
+        PluginMgr.cleanIntentPluginParams(intent);
 
         // TODO 是否重复
         // 附上额外数据，进行校验
@@ -480,13 +480,13 @@ public class PluginCommImpl {
         PluginBinderInfo info = new PluginBinderInfo(PluginBinderInfo.SERVICE_REQUEST);
         try {
             // 容器选择
-            IPluginClient client = MP.startPluginProcess(plugin, process, info);
+            IPluginClient client = RePluginOS.startPluginProcess(plugin, process, info);
             if (client == null) {
                 return null;
             }
 
             // 直接分配
-            container = IPC.getPackageName() + PmBase.CONTAINER_SERVICE_PART + info.index;
+            container = IPC.getPackageName() + PluginMgr.CONTAINER_SERVICE_PART + info.index;
 
             return new ComponentName(IPC.getPackageName(), container);
         } catch (Throwable e) {
@@ -510,7 +510,7 @@ public class PluginCommImpl {
         PluginBinderInfo info = new PluginBinderInfo(PluginBinderInfo.PROVIDER_REQUEST);
         try {
             // 容器选择
-            IPluginClient client = MP.startPluginProcess(plugin, process, info);
+            IPluginClient client = RePluginOS.startPluginProcess(plugin, process, info);
             if (client == null) {
                 return null;
             }
@@ -540,7 +540,7 @@ public class PluginCommImpl {
             // Main工程的ClassLoader
             return RePlugin.PLUGIN_NAME_MAIN;
         }
-        Plugin p = mPluginMgr.lookupPlugin(cl);
+        AllPluginsInfoPool p = mPluginMgr.lookupPlugin(cl);
         if (p == null) {
             // 没有拿到插件的
             return null;
@@ -558,7 +558,7 @@ public class PluginCommImpl {
      */
     public ActivityInfo getActivityInfo(String plugin, String activity, Intent intent) {
         // 获取插件对象
-        Plugin p = mPluginMgr.loadAppPlugin(plugin);
+        AllPluginsInfoPool p = mPluginMgr.loadAppPlugin(plugin);
         if (p == null) {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "PACM: bindActivity: may be invalid plugin name or load plugin failed: plugin=" + p);
@@ -570,7 +570,7 @@ public class PluginCommImpl {
 
         // activity 不为空时，从插件声明的 Activity 集合中查找
         if (!TextUtils.isEmpty(activity)) {
-            ai = p.mLoader.mComponents.getActivity(activity);
+            ai = p.mPluginLoader.mComponents.getActivity(activity);
         } else {
             // activity 为空时，根据 Intent 匹配
             ai = IntentMatcherHelper.getActivityInfo(mContext, plugin, intent);

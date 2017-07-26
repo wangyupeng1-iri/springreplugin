@@ -28,7 +28,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.qihoo360.i.Factory;
+import com.qihoo360.i.PluginsFactory;
 import com.qihoo360.loader2.mgr.IServiceConnection;
 import com.qihoo360.mobilesafe.core.BuildConfig;
 import com.qihoo360.mobilesafe.utils.basic.ArrayMap;
@@ -329,7 +329,7 @@ public class PluginServiceServer {
         }
 
         // 开始尝试获取插件的ServiceInfo
-        ComponentList col = Factory.queryPluginComponentList(pn);
+        ComponentList col = PluginsFactory.queryPluginComponentList(pn);
         if (col == null) {
             if (LOG) {
                 Log.e(TAG, "installServiceLocked(): Fetch Component List Error! pn=" + pn);
@@ -381,7 +381,7 @@ public class PluginServiceServer {
     // 加载插件，获取Service对象，并将其缓存起来
     private boolean installServiceLocked(ServiceRecord sr) {
         // 通过ServiceInfo创建Service对象
-        Context plgc = Factory.queryPluginContext(sr.plugin);
+        Context plgc = PluginsFactory.queryPluginContext(sr.plugin);
         if (plgc == null) {
             if (LogDebug.LOG) {
                 Log.e(TAG, "installServiceLocked(): Fetch Context Error! pn=" + sr.plugin);

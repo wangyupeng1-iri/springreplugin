@@ -19,7 +19,7 @@ package com.qihoo360.replugin.model;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.qihoo360.loader2.Constant;
+import com.qihoo360.loader2.AppConstant;
 import com.qihoo360.replugin.helper.JSONHelper;
 import com.qihoo360.replugin.helper.LogDebug;
 
@@ -101,7 +101,7 @@ public class PluginInfoList implements Iterable<PluginInfo> {
     public boolean load(Context context) {
          try {
             // 1. 新建或打开文件
-            File d = context.getDir(Constant.LOCAL_PLUGIN_APK_SUB_DIR, 0);
+            File d = context.getDir(AppConstant.LOCAL_PLUGIN_APK_SUB_DIR, 0);
             File f = new File(d, "p.l");
             if (!f.exists()) {
                 // 不存在？直接创建一个新的即可
@@ -160,7 +160,7 @@ public class PluginInfoList implements Iterable<PluginInfo> {
 
     public boolean save(Context context) {
         try {
-            File d = context.getDir(Constant.LOCAL_PLUGIN_APK_SUB_DIR, 0);
+            File d = context.getDir(AppConstant.LOCAL_PLUGIN_APK_SUB_DIR, 0);
             File f = new File(d, "p.l");
             FileUtils.writeStringToFile(f, mJson.toString(), Charsets.UTF_8);
 

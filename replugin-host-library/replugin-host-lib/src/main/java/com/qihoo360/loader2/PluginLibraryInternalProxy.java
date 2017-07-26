@@ -25,7 +25,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import com.qihoo360.i.Factory;
+import com.qihoo360.i.PluginsFactory;
 import com.qihoo360.i.Factory2;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.replugin.utils.ReflectUtils;
@@ -44,7 +44,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
-import static com.qihoo360.i.Factory.loadPluginActivity;
+import static com.qihoo360.i.PluginsFactory.loadPluginActivity;
 import static com.qihoo360.replugin.helper.LogDebug.LOG;
 import static com.qihoo360.replugin.helper.LogDebug.PLUGIN_TAG;
 import static com.qihoo360.replugin.helper.LogRelease.LOGR;
@@ -56,12 +56,14 @@ import static com.qihoo360.replugin.helper.LogRelease.LOGR;
  */
 public class PluginLibraryInternalProxy {
 
+    private static final String TAG = "PluginLibraryInternalProxy";
+
     /**
      *
      */
-    PmBase mPluginMgr;
+    PluginMgr mPluginMgr;
 
-    PluginLibraryInternalProxy(PmBase pm) {
+    PluginLibraryInternalProxy(PluginMgr pm) {
         mPluginMgr = pm;
     }
 
@@ -80,7 +82,7 @@ public class PluginLibraryInternalProxy {
 
         // 兼容模式，直接使用标准方式启动
         if (intent.getBooleanExtra(IPluginManager.KEY_COMPATIBLE, false)) {
-            PmBase.cleanIntentPluginParams(intent);
+            PluginMgr.cleanIntentPluginParams(intent);
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "start context: COMPATIBLE is true, direct start");
             }
@@ -103,7 +105,7 @@ public class PluginLibraryInternalProxy {
 
         // 已经是标准坑了（例如N1ST1这样的），则无需再过“坑位分配”逻辑，直接使用标准方式启动
         if (mPluginMgr.isActivity(name)) {
-            PmBase.cleanIntentPluginParams(intent);
+            PluginMgr.cleanIntentPluginParams(intent);
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "start context: context is container, direct start");
             }
@@ -150,7 +152,7 @@ public class PluginLibraryInternalProxy {
 
         // 仍然拿不到插件名？（例如从宿主中调用），则打开的Activity可能是宿主的。直接使用标准方式启动
         if (TextUtils.isEmpty(plugin)) {
-            PmBase.cleanIntentPluginParams(intent);
+            PluginMgr.cleanIntentPluginParams(intent);
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "start context: plugin and context is empty, direct start");
             }
@@ -160,10 +162,10 @@ public class PluginLibraryInternalProxy {
         // 获取进程值，看目标Activity要打开哪个进程
         int process = intent.getIntExtra(IPluginManager.KEY_PROCESS, Integer.MIN_VALUE);
 
-        PmBase.cleanIntentPluginParams(intent);
+        PluginMgr.cleanIntentPluginParams(intent);
 
         // 调用“特殊版”的startActivity，不让自动填写ComponentName，防止外界再用时出错
-        return Factory.startActivityWithNoInjectCN(context, intent, plugin, name, process);
+        return PluginsFactory.startActivityWithNoInjectCN(context, intent, plugin, name, process);
     }
 
     // 通过Activity坑位来获取插件名
@@ -234,7 +236,7 @@ public class PluginLibraryInternalProxy {
         // Added by Jiongxuan Zhang
         if (PluginStatusController.getStatus(plugin) < PluginStatusController.STATUS_OK) {
             if (LOG) {
-                LogDebug.d(PLUGIN_TAG, "PluginLibraryInternalProxy.startActivity(): Plugin Disabled. pn=" + plugin);
+                LogDebug.d(PLUGIN_TAG, "PluginLibraryInternalProxy.startActivity(): AllPluginsInfoPool Disabled. pn=" + plugin);
             }
             return RePlugin.getConfig().getCallbacks().onPluginNotExistsForActivity(context, plugin, intent, process);
         }
@@ -245,7 +247,7 @@ public class PluginLibraryInternalProxy {
             PluginDesc pd = PluginDesc.get(plugin);
             if (pd != null && pd.isLarge()) {
                 if (LOG) {
-                    LogDebug.d(PLUGIN_TAG, "PM.startActivity(): Large Plugin! p=" + plugin);
+                    LogDebug.d(PLUGIN_TAG, "PM.startActivity(): Large AllPluginsInfoPool! p=" + plugin);
                 }
                 return RePlugin.getConfig().getCallbacks().onLoadLargePluginForActivity(context, plugin, intent, process);
             }
@@ -280,18 +282,7 @@ public class PluginLibraryInternalProxy {
             LogDebug.d(PLUGIN_TAG, "start activity: real intent=" + intent);
         }
 
-//        if (RePluginInternal.FOR_DEV) {
-//            try {
-//                String str = cn.getPackageName() + "/" + cn.getClassName();
-//                if (LOG) {
-//                    LogDebug.d(PLUGIN_TAG, "str=" + str);
-//                }
-//                new ProcessBuilder().command("am", "start", "-D", "--user", "0", "-n", str).start();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        } else {
-
+        //终于可以启动activity了
         context.startActivity(intent);
 
         // 通知外界，已准备好要打开Activity了
@@ -361,29 +352,29 @@ public class PluginLibraryInternalProxy {
         // 以下两种情况需要下载插件：
         // 1、V5文件不存在（常见）；
         // 2、V5文件非法（加载失败）
-        String n = V5FileInfo.getFileName(plugin);
+        String n = DownloadFileInfo.getFileName(plugin);
         File f = new File(RePlugin.getConfig().getPnInstallDir(), n);
         if (!f.exists()) {
             if (LOG) {
-                LogDebug.d(PLUGIN_TAG, "isNeedToDownload(): V5 file not exists. Plugin = " + plugin);
+                LogDebug.d(PLUGIN_TAG, "isNeedToDownload(): V5 file not exists. AllPluginsInfoPool = " + plugin);
             }
             return true;
         }
 
         if (LOG) {
-            LogDebug.d(PLUGIN_TAG, "isNeedToDownload(): V5 file exists. Extracting... Plugin = " + plugin);
+            LogDebug.d(PLUGIN_TAG, "isNeedToDownload(): V5 file exists. Extracting... AllPluginsInfoPool = " + plugin);
         }
 
-        PluginInfo i = MP.pluginDownloaded(f.getAbsolutePath());
+        PluginInfo i = RePluginOS.pluginDownloaded(f.getAbsolutePath());
         if (i == null) {
             if (LOG) {
-                LogDebug.d(PLUGIN_TAG, "isNeedToDownload(): V5 file is invalid. Plugin = " + plugin);
+                LogDebug.d(PLUGIN_TAG, "isNeedToDownload(): V5 file is invalid. AllPluginsInfoPool = " + plugin);
             }
             return true;
         }
 
         if (LOG) {
-            LogDebug.d(PLUGIN_TAG, "isNeedToDownload(): V5 file is Okay. Loading... Plugin = " + plugin);
+            LogDebug.d(PLUGIN_TAG, "isNeedToDownload(): V5 file is Okay. Loading... AllPluginsInfoPool = " + plugin);
         }
         return false;
     }
@@ -403,10 +394,10 @@ public class PluginLibraryInternalProxy {
 //            }
 //            return null;
 //        }
-//        Plugin plugin = mPluginMgr.loadAppPlugin(state.mCN.getPackageName());
+//        AllPluginsInfoPool plugin = mPluginMgr.loadAppPlugin(state.mCN.getPackageName());
 
         // 此时插件必须被加载，因此通过class loader一定能找到对应的PLUGIN对象
-        Plugin plugin = mPluginMgr.lookupPlugin(activity.getClass().getClassLoader());
+        AllPluginsInfoPool plugin = mPluginMgr.lookupPlugin(activity.getClass().getClassLoader());
         if (plugin == null) {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "PACM: createActivityContext: can't found plugin object for activity=" + activity.getClass().getName());
@@ -414,7 +405,7 @@ public class PluginLibraryInternalProxy {
             return null;
         }
 
-        return plugin.mLoader.createBaseContext(newBase);
+        return plugin.mPluginLoader.createBaseContext(newBase);
     }
 
     /**
@@ -484,7 +475,7 @@ public class PluginLibraryInternalProxy {
                     if (LOGR) {
                         LogRelease.w(PLUGIN_TAG, "a.c.1: a=" + activityName + " l=" + activity.getClass().getName());
                     }
-                    PMF.forward(activity, intent);
+                    PluginMgrFacade.forward(activity, intent);
                     return;
                 }
                 if (LOG) {
@@ -636,7 +627,7 @@ public class PluginLibraryInternalProxy {
      */
     public JSONArray fetchPlugins(String name) {
         // 先获取List，然后再逐步搞JSON
-        List<PluginInfo> l = MP.getPlugins(false);
+        List<PluginInfo> l = RePluginOS.getPlugins(false);
         JSONArray ja = new JSONArray();
         synchronized (PluginTable.PLUGINS) {
             for (PluginInfo info : l) {

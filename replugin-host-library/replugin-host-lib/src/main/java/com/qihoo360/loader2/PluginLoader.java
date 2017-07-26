@@ -29,7 +29,7 @@ import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.qihoo360.i.Factory;
+import com.qihoo360.i.PluginsFactory;
 import com.qihoo360.i.IModule;
 import com.qihoo360.i.IPlugin;
 import com.qihoo360.mobilesafe.core.BuildConfig;
@@ -62,7 +62,7 @@ import static com.qihoo360.replugin.helper.LogRelease.LOGR;
 /**
  * @author RePlugin Team
  */
-class Loader {
+class PluginLoader {
 
     private final Context mContext;
 
@@ -70,7 +70,7 @@ class Loader {
 
     final String mPath;
 
-    final Plugin mPluginObj;
+    final AllPluginsInfoPool mPluginObj;
 
     PackageInfo mPackageInfo;
 
@@ -136,7 +136,7 @@ class Loader {
      *          缓存plugin可以实时拿到最新的mInfo对象，防止出现问题
      *          FIXME 有优化空间，但改动量会很大，暂缓
      */
-    Loader(Context context, String name, String path, Plugin p) {
+    PluginLoader(Context context, String name, String path, AllPluginsInfoPool p) {
         mContext = context;
         mPluginName = name;
         mPath = path;
@@ -167,7 +167,7 @@ class Loader {
         try {
             PackageManager pm = mContext.getPackageManager();
 
-            mPackageInfo = Plugin.queryCachedPackageInfo(mPath);
+            mPackageInfo = AllPluginsInfoPool.queryCachedPackageInfo(mPath);
             if (mPackageInfo == null) {
                 // PackageInfo
                 mPackageInfo = pm.getPackageArchiveInfo(mPath,
@@ -199,18 +199,18 @@ class Loader {
 //                }
 
                 // 缓存表: pkgName -> pluginName
-                synchronized (Plugin.PKG_NAME_2_PLUGIN_NAME) {
-                    Plugin.PKG_NAME_2_PLUGIN_NAME.put(mPackageInfo.packageName, mPluginName);
+                synchronized (AllPluginsInfoPool.PKG_NAME_2_PLUGIN_NAME) {
+                    AllPluginsInfoPool.PKG_NAME_2_PLUGIN_NAME.put(mPackageInfo.packageName, mPluginName);
                 }
 
                 // 缓存表: pluginName -> fileName
-                synchronized (Plugin.PLUGIN_NAME_2_FILENAME) {
-                    Plugin.PLUGIN_NAME_2_FILENAME.put(mPluginName, mPath);
+                synchronized (AllPluginsInfoPool.PLUGIN_NAME_2_FILENAME) {
+                    AllPluginsInfoPool.PLUGIN_NAME_2_FILENAME.put(mPluginName, mPath);
                 }
 
                 // 缓存表: fileName -> PackageInfo
-                synchronized (Plugin.FILENAME_2_PACKAGE_INFO) {
-                    Plugin.FILENAME_2_PACKAGE_INFO.put(mPath, new WeakReference<PackageInfo>(mPackageInfo));
+                synchronized (AllPluginsInfoPool.FILENAME_2_PACKAGE_INFO) {
+                    AllPluginsInfoPool.FILENAME_2_PACKAGE_INFO.put(mPath, new WeakReference<PackageInfo>(mPackageInfo));
                 }
             }
 
@@ -226,17 +226,17 @@ class Loader {
 
             // 创建或获取ComponentList表
             // Added by Jiongxuan Zhang
-            mComponents = Plugin.queryCachedComponentList(mPath);
+            mComponents = AllPluginsInfoPool.queryCachedComponentList(mPath);
             if (mComponents == null) {
                 // ComponentList
                 mComponents = new ComponentList(mPackageInfo, mPath, mPluginObj.mInfo);
 
-                // 动态注册插件中声明的 receiver
+                // 支持插件中的"静态广播"，插件中【静态广播】转变为宿主【动态广播】
                 regReceivers();
 
                 // 缓存表：ComponentList
-                synchronized (Plugin.FILENAME_2_COMPONENT_LIST) {
-                    Plugin.FILENAME_2_COMPONENT_LIST.put(mPath, new WeakReference<>(mComponents));
+                synchronized (AllPluginsInfoPool.FILENAME_2_COMPONENT_LIST) {
+                    AllPluginsInfoPool.FILENAME_2_COMPONENT_LIST.put(mPath, new WeakReference<>(mComponents));
                 }
 
                 /* 只调整一次 */
@@ -247,11 +247,11 @@ class Loader {
                 adjustPluginTaskAffinity(mPluginName, mPackageInfo.applicationInfo);
             }
 
-            if (load == Plugin.LOAD_INFO) {
+            if (load == AllPluginsInfoPool.LOAD_INFO) {
                 return isPackageInfoLoaded();
             }
 
-            mPkgResources = Plugin.queryCachedResources(mPath);
+            mPkgResources = AllPluginsInfoPool.queryCachedResources(mPath);
             // LOAD_RESOURCES和LOAD_ALL都会获取资源，但LOAD_INFO不可以（只允许获取PackageInfo）
             if (mPkgResources == null) {
                 // Resources
@@ -280,15 +280,15 @@ class Loader {
                 }
 
                 // 缓存表: Resources
-                synchronized (Plugin.FILENAME_2_RESOURCES) {
-                    Plugin.FILENAME_2_RESOURCES.put(mPath, new WeakReference<>(mPkgResources));
+                synchronized (AllPluginsInfoPool.FILENAME_2_RESOURCES) {
+                    AllPluginsInfoPool.FILENAME_2_RESOURCES.put(mPath, new WeakReference<>(mPkgResources));
                 }
             }
-            if (load == Plugin.LOAD_RESOURCES) {
+            if (load == AllPluginsInfoPool.LOAD_RESOURCES) {
                 return isResourcesLoaded();
             }
 
-            mClassLoader = Plugin.queryCachedClassLoader(mPath);
+            mClassLoader = AllPluginsInfoPool.queryCachedClassLoader(mPath);
             if (mClassLoader == null) {
                 // ClassLoader
                 String out = mPluginObj.mInfo.getDexParentDir().getPath();
@@ -317,11 +317,11 @@ class Loader {
                 }
 
                 // 缓存表：ClassLoader
-                synchronized (Plugin.FILENAME_2_DEX) {
-                    Plugin.FILENAME_2_DEX.put(mPath, new WeakReference<>(mClassLoader));
+                synchronized (AllPluginsInfoPool.FILENAME_2_ClassLoader) {
+                    AllPluginsInfoPool.FILENAME_2_ClassLoader.put(mPath, new WeakReference<>(mClassLoader));
                 }
             }
-            if (load == Plugin.LOAD_DEX) {
+            if (load == AllPluginsInfoPool.LOAD_DEX) {
                 return isDexLoaded();
             }
 
@@ -376,12 +376,12 @@ class Loader {
     final boolean loadEntryMethod(boolean log) {
         //
         try {
-            String className = Factory.PLUGIN_ENTRY_PACKAGE_PREFIX + "." + mPluginName + "." + Factory.PLUGIN_ENTRY_CLASS_NAME;
+            String className = PluginsFactory.PLUGIN_ENTRY_PACKAGE_PREFIX + "." + mPluginName + "." + PluginsFactory.PLUGIN_ENTRY_CLASS_NAME;
             Class<?> c = mClassLoader.loadClass(className);
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "found entry: className=" + className + ", loader=" + c.getClassLoader());
             }
-            mCreateMethod = c.getDeclaredMethod(Factory.PLUGIN_ENTRY_EXPORT_METHOD_NAME, Factory.PLUGIN_ENTRY_EXPORT_METHOD_PARAMS);
+            mCreateMethod = c.getDeclaredMethod(PluginsFactory.PLUGIN_ENTRY_EXPORT_METHOD_NAME, PluginsFactory.PLUGIN_ENTRY_EXPORT_METHOD_PARAMS);
         } catch (Throwable e) {
             if (log) {
                 if (LOGR) {
@@ -400,7 +400,7 @@ class Loader {
         try {
             mPlugin = (IPlugin) mCreateMethod.invoke(null, mPkgContext, manager);
             if (LOG) {
-                LogDebug.d(PLUGIN_TAG, "Loader.invoke(): plugin=" + mPath + ", cl=" + (mPlugin != null ? mPlugin.getClass().getClassLoader() : "null"));
+                LogDebug.d(PLUGIN_TAG, "PluginLoader.invoke(): plugin=" + mPath + ", cl=" + (mPlugin != null ? mPlugin.getClass().getClassLoader() : "null"));
             }
         } catch (Throwable e) {
             if (LOGR) {
@@ -414,12 +414,12 @@ class Loader {
     final boolean loadEntryMethod2() {
         //
         try {
-            String className = Factory.PLUGIN_ENTRY_PACKAGE_PREFIX + "." + mPluginName + "." + Factory.PLUGIN_ENTRY_CLASS_NAME;
+            String className = PluginsFactory.PLUGIN_ENTRY_PACKAGE_PREFIX + "." + mPluginName + "." + PluginsFactory.PLUGIN_ENTRY_CLASS_NAME;
             Class<?> c = mClassLoader.loadClass(className);
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "found entry: className=" + className + ", loader=" + c.getClassLoader());
             }
-            mCreateMethod2 = c.getDeclaredMethod(Factory.PLUGIN_ENTRY_EXPORT_METHOD_NAME, Factory.PLUGIN_ENTRY_EXPORT_METHOD2_PARAMS);
+            mCreateMethod2 = c.getDeclaredMethod(PluginsFactory.PLUGIN_ENTRY_EXPORT_METHOD_NAME, PluginsFactory.PLUGIN_ENTRY_EXPORT_METHOD2_PARAMS);
         } catch (Throwable e) {
             // 老版本的插件才会用到这个方法，因后面还有新版本的load方式，这里不打log
 //            if (LOGR) {
@@ -432,12 +432,12 @@ class Loader {
     final boolean loadEntryMethod3() {
         //
         try {
-            String className = Factory.REPLUGIN_LIBRARY_ENTRY_PACKAGE_PREFIX + "." + Factory.PLUGIN_ENTRY_CLASS_NAME;
+            String className = PluginsFactory.REPLUGIN_LIBRARY_ENTRY_PACKAGE_PREFIX + "." + PluginsFactory.PLUGIN_ENTRY_CLASS_NAME;
             Class<?> c = mClassLoader.loadClass(className);
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "found entry: className=" + className + ", loader=" + c.getClassLoader());
             }
-            mCreateMethod2 = c.getDeclaredMethod(Factory.PLUGIN_ENTRY_EXPORT_METHOD_NAME, Factory.PLUGIN_ENTRY_EXPORT_METHOD2_PARAMS);
+            mCreateMethod2 = c.getDeclaredMethod(PluginsFactory.PLUGIN_ENTRY_EXPORT_METHOD_NAME, PluginsFactory.PLUGIN_ENTRY_EXPORT_METHOD2_PARAMS);
         } catch (Throwable e) {
             if (LOGR) {
                 LogRelease.e(PLUGIN_TAG, e.getMessage(), e);
@@ -459,7 +459,7 @@ class Loader {
             mBinderPlugin = new ProxyPlugin(b);
             mPlugin = mBinderPlugin;
             if (LOG) {
-                LogDebug.d(PLUGIN_TAG, "Loader.invoke2(): plugin=" + mPath + ", plugin.binder.cl=" + b.getClass().getClassLoader());
+                LogDebug.d(PLUGIN_TAG, "PluginLoader.invoke2(): plugin=" + mPath + ", plugin.binder.cl=" + b.getClass().getClassLoader());
             }
         } catch (Throwable e) {
             if (LOGR) {

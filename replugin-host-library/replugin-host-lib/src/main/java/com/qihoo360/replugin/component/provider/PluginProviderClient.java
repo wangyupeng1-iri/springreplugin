@@ -30,7 +30,7 @@ import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.qihoo360.i.Factory;
+import com.qihoo360.i.PluginsFactory;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.component.ComponentList;
@@ -320,7 +320,7 @@ public class PluginProviderClient {
     private static String fetchPluginByContext(Context c, Uri uri) {
         // 根据Context的ClassLoader来看到底属于哪个插件，还是只是主程序
         ClassLoader cl = c.getClassLoader();
-        String pn = Factory.fetchPluginName(cl);
+        String pn = PluginsFactory.fetchPluginName(cl);
         if (TextUtils.isEmpty(pn)) {
             // 获得了无效的插件信息，这种情况很少见，故打出错误信息，什么也不做
             if (LOGR) {
@@ -344,7 +344,7 @@ public class PluginProviderClient {
 
     private static int getProcessByAuthority(String pn, String authority) {
         // 开始尝试获取插件的ServiceInfo
-        ComponentList col = Factory.queryPluginComponentList(pn);
+        ComponentList col = PluginsFactory.queryPluginComponentList(pn);
         if (col == null) {
             if (LogDebug.LOG) {
                 Log.e(TAG, "getProcessByAuthority(): Fetch Component List Error! pn=" + pn + "; au=" + authority);

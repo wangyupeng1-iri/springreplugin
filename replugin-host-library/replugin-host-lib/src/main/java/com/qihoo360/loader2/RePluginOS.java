@@ -19,16 +19,13 @@ package com.qihoo360.loader2;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-import com.qihoo360.loader.utils.ProcessLocker;
 import com.qihoo360.replugin.IHostBinderFetcher;
 import com.qihoo360.replugin.RePlugin;
-import com.qihoo360.replugin.RePluginInternal;
 import com.qihoo360.replugin.helper.LogDebug;
 import com.qihoo360.replugin.helper.LogRelease;
 import com.qihoo360.replugin.model.PluginInfo;
 import com.qihoo360.replugin.packages.PluginManagerProxy;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,11 +36,14 @@ import static com.qihoo360.replugin.helper.LogDebug.PLUGIN_TAG;
 import static com.qihoo360.replugin.helper.LogRelease.LOGR;
 
 /**
- * 对外接口代码
  *
  * @author RePlugin Team
  */
-public class MP {
+public class RePluginOS {
+
+
+    private static final String TAG = "RePluginOS";
+
 
     /**
      * 需要重启常驻进程
@@ -67,7 +67,7 @@ public class MP {
      * @param p
      */
     public static final void installBuiltinPlugin(String name, IHostBinderFetcher p) {
-        PMF.sPluginMgr.installBuiltinPlugin(name, p);
+        PluginMgrFacade.sPluginMgr.installBuiltinPlugin(name, p);
     }
 
     /**
@@ -116,7 +116,7 @@ public class MP {
      */
     public static final PluginBinder fetchPluginBinder(String plugin, int process, String binder) {
         if (LOG) {
-            LogDebug.d(PLUGIN_TAG, "MP.fetchPluginBinder ... plugin=" + plugin + " binder.name=" + binder);
+            LogDebug.d(PLUGIN_TAG, "RePluginOS.fetchPluginBinder ... plugin=" + plugin + " binder.name=" + binder);
         }
 
         // 若开启了“打印详情”则打印调用栈，便于观察
@@ -143,7 +143,7 @@ public class MP {
         IBinder b = null;
         try {
             // 容器选择
-            IPluginClient client = MP.startPluginProcess(plugin, process, info);
+            IPluginClient client = RePluginOS.startPluginProcess(plugin, process, info);
             if (client == null) {
                 if (LOGR) {
                     LogRelease.e(PLUGIN_TAG, "mp.f.p.b: s c fail");
@@ -153,7 +153,7 @@ public class MP {
             // 远程获取
             b = client.queryBinder(plugin, binder);
             if (LOG) {
-                LogDebug.d(PLUGIN_TAG, "MP.fetchPluginBinder binder.object=" + b + " pid=" + info.pid);
+                LogDebug.d(PLUGIN_TAG, "RePluginOS.fetchPluginBinder binder.object=" + b + " pid=" + info.pid);
             }
             // 增加计数器
             if (b != null) {
@@ -177,7 +177,7 @@ public class MP {
      */
     public static final void releasePluginBinder(PluginBinder binder) {
         if (LOG) {
-            LogDebug.d(PLUGIN_TAG, "MP.releasePluginBinder ... pid=" + binder.pid + " binder=" + binder.binder);
+            LogDebug.d(PLUGIN_TAG, "RePluginOS.releasePluginBinder ... pid=" + binder.pid + " binder=" + binder.binder);
         }
 
         // 记录调用栈，便于观察：删除
@@ -204,43 +204,10 @@ public class MP {
      */
     public static final PluginInfo pluginDownloaded(String path) {
         if (LOG) {
-            LogDebug.d(PLUGIN_TAG, "MP.pluginDownloaded ... path=" + path);
+            LogDebug.d(TAG, "RePluginOS.pluginDownloaded ... path=" + path);
         }
 
-        /**
-         * 问题描述：
-         *
-         * 对于正在生效的插件，如果当前时机pluginHost没有存活，那么这里会先启动pluginHost，然后再调用它的PluginHost进程的pluginDownloaded接口
-         *
-         * 这里的问题是：pluginHost进程在启动过程会通过扫描文件的方式将当前即将生效的插件识别到，
-         * 而在进程ready后，再去调用pluginDownloaded接口的时候会认为它不是新插件，从而不会通过NEW_PLUGIN广播来周知所有进程新插件生效了
-         * 因此，当前进程也不会同步新插件生效的逻辑。
-         * so，问题就来了，当前进程新下载的插件由于pluginHost的逻辑无法正常生效。
-         * 当然该问题只针对p-n格式的插件，而纯APK格式的插件不再使用进程启动的时候通过扫描文件目录的方式来来识别所有准备好的插件
-         *
-         * 解决办法：
-         * 对于处于该流程的插件文件（p-n插件）加上lock文件，以表示当前插件正在生效，不需要plugHost进程再次扫描生效了，也就不存在新插件在新进程中成为了老插件
-         */
-
-        ProcessLocker lock = null;
-
         try {
-            if (path != null) {
-                File f = new File(path);
-                String fileName = f.getName();
-                String fileDir = f.getParent();
-                if (fileName.startsWith("p-n-")) {
-                    lock = new ProcessLocker(RePluginInternal.getAppContext(), fileDir, fileName + ".lock");
-                }
-            }
-
-            if (lock != null && !lock.tryLock()) {
-                // 加锁
-                if (LOG) {
-                    LogDebug.d(PLUGIN_TAG, "MP.pluginDownloaded ... lock file + " + path + " failed! ");
-                }
-            }
-
             PluginInfo info = PluginProcessMain.getPluginHost().pluginDownloaded(path);
             if (info != null) {
                 RePlugin.getConfig().getEventCallbacks().onInstallPluginSucceed(info);
@@ -248,14 +215,10 @@ public class MP {
             return info;
         } catch (Throwable e) {
             if (LOGR) {
-                LogRelease.e(PLUGIN_TAG, "mp.pded: " + e.getMessage(), e);
-            }
-        } finally {
-            // 去锁
-            if (lock != null) {
-                lock.unlock();
+                LogRelease.e(TAG, "mp.pded: " + e.getMessage(), e);
             }
         }
+
         return null;
     }
 
@@ -270,7 +233,7 @@ public class MP {
      */
     public static final boolean pluginUninstall(String pluginName) {
         if (LOG) {
-            LogDebug.d(PLUGIN_TAG, "MP.pluginUninstall ... pluginName=" + pluginName);
+            LogDebug.d(PLUGIN_TAG, "RePluginOS.pluginUninstall ... pluginName=" + pluginName);
         }
         PluginInfo pi = getPlugin(pluginName, true);
 
@@ -301,7 +264,7 @@ public class MP {
      */
     public static final boolean pluginExtracted(String path) {
         if (LOG) {
-            LogDebug.d(PLUGIN_TAG, "MP.pluginExtracted ... path=" + path);
+            LogDebug.d(PLUGIN_TAG, "RePluginOS.pluginExtracted ... path=" + path);
         }
         try {
             return PluginProcessMain.getPluginHost().pluginExtracted(path);
@@ -362,7 +325,7 @@ public class MP {
         int rc = 0;
         rc = PluginProcessMain.sumActivities();
         if (LOG) {
-            LogDebug.d(MAIN_TAG, "MP.sumActivities = " + rc);
+            LogDebug.d(MAIN_TAG, "RePluginOS.sumActivities = " + rc);
         }
         return rc;
     }
@@ -374,7 +337,7 @@ public class MP {
      */
     public static final int sumBinders() {
         if (LOG) {
-            LogDebug.d(PLUGIN_TAG, "MP.sumBinders ... index=" + PluginManager.sPluginProcessIndex);
+            LogDebug.d(PLUGIN_TAG, "RePluginOS.sumBinders ... index=" + PluginManager.sPluginProcessIndex);
         }
         try {
             return PluginProcessMain.getPluginHost().sumBinders(PluginManager.sPluginProcessIndex);

@@ -29,7 +29,7 @@ import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
-import com.qihoo360.i.Factory;
+import com.qihoo360.i.PluginsFactory;
 import com.qihoo360.i.IModule;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.replugin.utils.ReflectUtils;
@@ -66,9 +66,9 @@ import static com.qihoo360.replugin.packages.PluginInfoUpdater.ACTION_UNINSTALL_
 /**
  * @author RePlugin Team
  */
-class PmBase {
+class PluginMgr {
 
-    private static final String TAG = "PmBase";
+    private static final String TAG = "PluginMgr";
 
     static final String ACTION_NEW_PLUGIN = "ACTION_NEW_PLUGIN";
 
@@ -109,7 +109,7 @@ class PmBase {
     /**
      * 所有插件
      */
-    private final Map<String, Plugin> mPlugins = new ConcurrentHashMap<>();
+    private final Map<String, AllPluginsInfoPool> mPlugins = new ConcurrentHashMap<>();
 
     /**
      * 仿插件对象，用来实现主程序提供binder给其他模块
@@ -129,7 +129,7 @@ class PmBase {
     /**
      *
      */
-    private Plugin mDefaultPlugin;
+    private AllPluginsInfoPool mDefaultPlugin;
 
     /**
      * TODO init
@@ -197,7 +197,7 @@ class PmBase {
         }
     }
 
-    PmBase(Context context) {
+    PluginMgr(Context context) {
         //
         mContext = context;
 
@@ -248,7 +248,7 @@ class PmBase {
 
         // 输出
         if (LOG) {
-            for (Plugin p : mPlugins.values()) {
+            for (AllPluginsInfoPool p : mPlugins.values()) {
                 LogDebug.d(PLUGIN_TAG, "plugin: p=" + p.mInfo);
             }
         }
@@ -352,12 +352,12 @@ class PmBase {
             return;
         }
         for (PluginInfo info : plugins) {
-            Plugin plugin = Plugin.build(info);
+            AllPluginsInfoPool plugin = AllPluginsInfoPool.build(info);
             putPluginObject(info, plugin);
         }
     }
 
-    private void putPluginObject(PluginInfo info, Plugin plugin) {
+    private void putPluginObject(PluginInfo info, AllPluginsInfoPool plugin) {
         // 同时加入PackageName和Alias（如有）
         mPlugins.put(info.getPackageName(), plugin);
         if (!TextUtils.isEmpty(info.getAlias())) {
@@ -385,10 +385,10 @@ class PmBase {
 
     final void callAttach() {
         //
-        mClassLoader = PmBase.class.getClassLoader();
+        mClassLoader = PluginMgr.class.getClassLoader();
 
         // 挂载
-        for (Plugin p : mPlugins.values()) {
+        for (AllPluginsInfoPool p : mPlugins.values()) {
             p.attach(mContext, mClassLoader, mLocal);
         }
 
@@ -396,9 +396,9 @@ class PmBase {
         if (PluginManager.isPluginProcess()) {
             if (!TextUtils.isEmpty(mDefaultPluginName)) {
                 //
-                Plugin p = mPlugins.get(mDefaultPluginName);
+                AllPluginsInfoPool p = mPlugins.get(mDefaultPluginName);
                 if (p != null) {
-                    boolean rc = p.load(Plugin.LOAD_APP, true);
+                    boolean rc = p.load(AllPluginsInfoPool.LOAD_APP, true);
                     if (!rc) {
                         if (LOG) {
                             LogDebug.d(PLUGIN_TAG, "failed to load default plugin=" + mDefaultPluginName);
@@ -517,7 +517,7 @@ class PmBase {
 //            //    at com.qihoo360.loader2.IPluginClient$Stub$Proxy.sendIntent(IPluginClient.java:165)
 //            //    at com.qihoo360.loader2.PmCore.sendIntent2Process(PmCore.java:386)
 //            //    at com.qihoo360.loader2.PluginManager.sendIntent2Process(PluginManager.java:1124)
-//            //    at com.qihoo360.loader2.MP.sendLocalBroadcast2All(MP.java:83)
+//            //    at com.qihoo360.loader2.RePluginOS.sendLocalBroadcast2All(RePluginOS.java:83)
 //            //    at com.qihoo360.mobilesafe.ui.index.IPC.sendLocalBroadcast2All(IPC.java:196)
 //            //    at com.qihoo360.mobilesafe.api.IPC.sendLocalBroadcast2All(IPC.java:131)
 //            Tasks.post2UI(new Runnable() {
@@ -531,7 +531,7 @@ class PmBase {
 //            });
 //        }
 //
-//        if (sPluginProcessIndex >= 0 && sPluginProcessIndex < Constant.STUB_PROCESS_COUNT) {
+//        if (sPluginProcessIndex >= 0 && sPluginProcessIndex < AppConstant.STUB_PROCESS_COUNT) {
 //            IntentFilter filter = new IntentFilter(ACTION_PERSISTENT_NEW_COOKIE);
 //            LocalBroadcastManager.getInstance(mContext).registerReceiver(new BroadcastReceiver() {
 //
@@ -684,7 +684,7 @@ class PmBase {
                 context.startActivity(intent);
             }
 
-            Plugin p = loadAppPlugin(dc.plugin);
+            AllPluginsInfoPool p = loadAppPlugin(dc.plugin);
             if (LOG) {
                 LogDebug.d("loadClass", "p=" + p);
             }
@@ -746,7 +746,7 @@ class PmBase {
      */
     private final Class<?> loadServiceClass(String className) {
         //
-        Plugin p = mDefaultPlugin;
+        AllPluginsInfoPool p = mDefaultPlugin;
         if (p == null) {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "plugin service loader: not found default plugin,  in=" + className);
@@ -754,7 +754,7 @@ class PmBase {
             return null;
         }
 
-        ServiceInfo services[] = p.mLoader.mPackageInfo.services;
+        ServiceInfo services[] = p.mPluginLoader.mPackageInfo.services;
         if (services == null || services.length <= 0) {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "plugin service loader: manifest not item found");
@@ -788,7 +788,7 @@ class PmBase {
      */
     private final Class<?> loadProviderClass(String className) {
         //
-        Plugin p = mDefaultPlugin;
+        AllPluginsInfoPool p = mDefaultPlugin;
         if (p == null) {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "plugin provider loader: not found default plugin,  in=" + className);
@@ -796,7 +796,7 @@ class PmBase {
             return null;
         }
 
-        ProviderInfo[] providers = p.mLoader.mPackageInfo.providers;
+        ProviderInfo[] providers = p.mPluginLoader.mPackageInfo.providers;
         if (providers == null || providers.length <= 0) {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "plugin provider loader: manifest not item found");
@@ -830,7 +830,7 @@ class PmBase {
      */
     private final Class<?> loadDefaultClass(String className) {
         //
-        Plugin p = mDefaultPlugin;
+        AllPluginsInfoPool p = mDefaultPlugin;
         if (p == null) {
             if (PluginManager.isPluginProcess()) {
                 if (LOG) {
@@ -873,7 +873,7 @@ class PmBase {
                 boolean load = false;
                 for (String a : args) {
                     if (load) {
-                        Context c = Factory.queryPluginContext(a);
+                        Context c = PluginsFactory.queryPluginContext(a);
                         writer.println("plugin.c=" + c);
                         return;
                     }
@@ -890,7 +890,8 @@ class PmBase {
                     if (load) {
                         try {
                             PluginBinderInfo info = new PluginBinderInfo(PluginBinderInfo.BINDER_REQUEST);
-                            /*IPluginClient client = */MP.startPluginProcess(a, IPluginManager.PROCESS_AUTO, info);
+                            /*IPluginClient client = */
+                            RePluginOS.startPluginProcess(a, IPluginManager.PROCESS_AUTO, info);
                         } catch (Throwable e) {
                             e.printStackTrace();
                         }
@@ -907,8 +908,8 @@ class PmBase {
                 for (String a : args) {
                     if (a.equals("--reason")) {
                         writer.println("--- Reason ---");
-                        if (Plugin.sLoadedReasons != null) {
-                            for (String reason : Plugin.sLoadedReasons) {
+                        if (AllPluginsInfoPool.sLoadedReasons != null) {
+                            for (String reason : AllPluginsInfoPool.sLoadedReasons) {
                                 writer.println(reason);
                             }
                         }
@@ -922,10 +923,10 @@ class PmBase {
                 for (String a : args) {
                     if (a.equals("--binder-reason")) {
                         writer.println("--- Binder Reason ---");
-                        if (MP.sBinderReasons != null) {
-                            for (String key : MP.sBinderReasons.keySet()) {
+                        if (RePluginOS.sBinderReasons != null) {
+                            for (String key : RePluginOS.sBinderReasons.keySet()) {
                                 writer.println("binder: " + key);
-                                writer.println(MP.sBinderReasons.get(key));
+                                writer.println(RePluginOS.sBinderReasons.get(key));
                             }
                         }
                         return;
@@ -957,7 +958,7 @@ class PmBase {
                     if (!TextUtils.isEmpty(plugin) && !TextUtils.isEmpty(activity)) {
                         Intent intent = new Intent();
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        Factory.startActivity(mContext, intent, plugin, activity, IPluginManager.PROCESS_AUTO);
+                        PluginsFactory.startActivity(mContext, intent, plugin, activity, IPluginManager.PROCESS_AUTO);
                     } else {
                         if (LOG) {
                             LogDebug.d(PLUGIN_TAG, "need {plugin} and {activity}");
@@ -972,7 +973,7 @@ class PmBase {
 
             writer.println("--- plugins V2 ---");
             writer.println("--- plugins.size = " + mPlugins.size() + " ---");
-            for (Plugin p : mPlugins.values()) {
+            for (AllPluginsInfoPool p : mPlugins.values()) {
                 writer.println(p.mInfo);
             }
             writer.println();
@@ -980,7 +981,7 @@ class PmBase {
             PluginProcessMain.dump(fd, writer, args);
 
             writer.println("--- plugins.cached objects ---");
-            Plugin.dump(fd, writer, args);
+            AllPluginsInfoPool.dump(fd, writer, args);
             writer.println();
         }
     }
@@ -993,14 +994,14 @@ class PmBase {
         return mContainerActivities.contains(name);
     }
 
-    final Plugin getPlugin(String plugin) {
+    final AllPluginsInfoPool getPlugin(String plugin) {
         return mPlugins.get(plugin);
     }
 
     // 是否为新的，或已经更新过的插件
     // 注意：若“插件正在运行”时触发更新，则这里应返回false，这样外界将不会发送“新插件”广播
     final boolean isNewOrUpdatedPlugin(PluginInfo info) {
-        Plugin p = mPlugins.get(info.getName());
+        AllPluginsInfoPool p = mPlugins.get(info.getName());
 
         // 满足三个条件的其一就表示为"新插件"，可以做下一步处理
         // 1. p为空，表示为全新插件
@@ -1011,34 +1012,34 @@ class PmBase {
                 (info.getPendingUpdate() != null && !RePlugin.isPluginRunning(info.getName()));
     }
 
-    final Plugin loadPackageInfoPlugin(String plugin, PluginCommImpl pm) {
-        Plugin p = Plugin.cloneAndReattach(mContext, mPlugins.get(plugin), mClassLoader, pm);
-        return loadPlugin(p, Plugin.LOAD_INFO, true);
+    final AllPluginsInfoPool loadPackageInfoPlugin(String plugin, PluginCommImpl pm) {
+        AllPluginsInfoPool p = AllPluginsInfoPool.cloneAndReattach(mContext, mPlugins.get(plugin), mClassLoader, pm);
+        return loadPlugin(p, AllPluginsInfoPool.LOAD_INFO, true);
     }
 
-    final Plugin loadResourcePlugin(String plugin, PluginCommImpl pm) {
-        Plugin p = Plugin.cloneAndReattach(mContext, mPlugins.get(plugin), mClassLoader, pm);
-        return loadPlugin(p, Plugin.LOAD_RESOURCES, true);
+    final AllPluginsInfoPool loadResourcePlugin(String plugin, PluginCommImpl pm) {
+        AllPluginsInfoPool p = AllPluginsInfoPool.cloneAndReattach(mContext, mPlugins.get(plugin), mClassLoader, pm);
+        return loadPlugin(p, AllPluginsInfoPool.LOAD_RESOURCES, true);
     }
 
-    final Plugin loadDexPlugin(String plugin, PluginCommImpl pm) {
-        Plugin p = Plugin.cloneAndReattach(mContext, mPlugins.get(plugin), mClassLoader, pm);
-        return loadPlugin(p, Plugin.LOAD_DEX, true);
+    final AllPluginsInfoPool loadDexPlugin(String plugin, PluginCommImpl pm) {
+        AllPluginsInfoPool p = AllPluginsInfoPool.cloneAndReattach(mContext, mPlugins.get(plugin), mClassLoader, pm);
+        return loadPlugin(p, AllPluginsInfoPool.LOAD_DEX, true);
     }
 
-    final Plugin loadAppPlugin(String plugin) {
-        return loadPlugin(mPlugins.get(plugin), Plugin.LOAD_APP, true);
+    final AllPluginsInfoPool loadAppPlugin(String plugin) {
+        return loadPlugin(mPlugins.get(plugin), AllPluginsInfoPool.LOAD_APP, true);
     }
 
     // 底层接口
-    final Plugin loadPlugin(PluginInfo pi, PluginCommImpl pm, int loadType, boolean useCache) {
-        Plugin p = Plugin.build(pi);
+    final AllPluginsInfoPool loadPlugin(PluginInfo pi, PluginCommImpl pm, int loadType, boolean useCache) {
+        AllPluginsInfoPool p = AllPluginsInfoPool.build(pi);
         p.attach(mContext, mClassLoader, pm);
         return loadPlugin(p, loadType, useCache);
     }
 
     // 底层接口
-    final Plugin loadPlugin(Plugin p, int loadType, boolean useCache) {
+    final AllPluginsInfoPool loadPlugin(AllPluginsInfoPool p, int loadType, boolean useCache) {
         if (p == null) {
             return null;
         }
@@ -1051,8 +1052,8 @@ class PmBase {
         return p;
     }
 
-    final Plugin lookupPlugin(ClassLoader loader) {
-        for (Plugin p : mPlugins.values()) {
+    final AllPluginsInfoPool lookupPlugin(ClassLoader loader) {
+        for (AllPluginsInfoPool p : mPlugins.values()) {
             if (p != null && p.getClassLoader() == loader) {
                 return p;
             }
@@ -1074,7 +1075,7 @@ class PmBase {
                 return;
             }
 
-            Plugin p = mPlugins.get(info.getName());
+            AllPluginsInfoPool p = mPlugins.get(info.getName());
 
             // 如果是内置插件，新插件extract成功，则直接替换
             // TODO 考虑加锁？
@@ -1095,7 +1096,7 @@ class PmBase {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "insert new plugin: ok: plugin=" + info);
             }
-            Plugin plugin = Plugin.build(info);
+            AllPluginsInfoPool plugin = AllPluginsInfoPool.build(info);
             plugin.attach(mContext, mClassLoader, mLocal);
 
             // 同时加入PackageName和Alias（如有）
@@ -1144,7 +1145,7 @@ class PmBase {
         PluginTable.removeInfo(info);
 
         // 移除内存中插件的PackageInfo、Resources、ComponentList和DexClassLoader缓存对象
-        Plugin.clearCachedPlugin(Plugin.queryCachedFilename(info.getName()));
+        AllPluginsInfoPool.clearCachedPlugin(AllPluginsInfoPool.queryCachedFilename(info.getName()));
     }
 
     final IPluginClient startPluginProcessLocked(String plugin, int process, PluginBinderInfo info) {
@@ -1153,7 +1154,7 @@ class PmBase {
         }
 
         // 强制使用UI进程
-        if (Constant.ENABLE_PLUGIN_ACTIVITY_AND_BINDER_RUN_IN_MAIN_UI_PROCESS) {
+        if (AppConstant.ENABLE_PLUGIN_ACTIVITY_AND_BINDER_RUN_IN_MAIN_UI_PROCESS) {
             if (info.request == PluginBinderInfo.ACTIVITY_REQUEST) {
                 if (process == IPluginManager.PROCESS_AUTO) {
                     process = IPluginManager.PROCESS_UI;

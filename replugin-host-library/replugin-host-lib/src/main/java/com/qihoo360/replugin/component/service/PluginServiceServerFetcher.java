@@ -21,7 +21,7 @@ import android.os.IBinder;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.loader2.IPluginClient;
 import com.qihoo360.loader2.IPluginHost;
-import com.qihoo360.loader2.MP;
+import com.qihoo360.loader2.RePluginOS;
 import com.qihoo360.loader2.PluginBinderInfo;
 import com.qihoo360.loader2.PluginProcessMain;
 import com.qihoo360.mobilesafe.utils.basic.ArrayMap;
@@ -68,7 +68,7 @@ public class PluginServiceServerFetcher {
                 pss = ph.fetchServiceServer();
             } else {
                 PluginBinderInfo pbi = new PluginBinderInfo(PluginBinderInfo.NONE_REQUEST);
-                IPluginClient pc = MP.startPluginProcess(null, process, pbi);
+                IPluginClient pc = RePluginOS.startPluginProcess(null, process, pbi);
                 pss = pc.fetchServiceServer();
             }
 

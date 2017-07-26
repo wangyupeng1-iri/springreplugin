@@ -23,7 +23,7 @@ import android.content.Intent;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
-import com.qihoo360.i.Factory;
+import com.qihoo360.i.PluginsFactory;
 import com.qihoo360.i.Factory2;
 import com.qihoo360.i.IModule;
 import com.qihoo360.loader.utils.PatchClassLoaderUtils;
@@ -40,11 +40,11 @@ import static com.qihoo360.replugin.helper.LogRelease.LOGR;
  *
  * @author RePlugin Team
  */
-public class PMF {
+public class PluginMgrFacade {
 
     private static Context sContext;
 
-    static PmBase sPluginMgr;
+    static PluginMgr sPluginMgr;
 
     /**
      * @param context
@@ -68,11 +68,13 @@ public class PMF {
 
         PluginManager.init(application);
 
-        sPluginMgr = new PmBase(application);
+        //关键点：插件管理器对象建立
+        sPluginMgr = new PluginMgr(application);
+        //关键点：插件管理器初始化
         sPluginMgr.init();
 
-        Factory.sPluginManager = PMF.getLocal();
-        Factory2.sPLProxy = PMF.getInternal();
+        PluginsFactory.sPluginManager = PluginMgrFacade.getLocal();
+        Factory2.sPLProxy = PluginMgrFacade.getInternal();
 
         PatchClassLoaderUtils.patch(application);
     }

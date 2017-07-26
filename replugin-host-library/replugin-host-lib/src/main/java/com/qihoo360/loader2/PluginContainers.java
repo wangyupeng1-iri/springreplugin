@@ -47,7 +47,7 @@ import static com.qihoo360.replugin.helper.LogRelease.LOGR;
 
 /**
  * 插件容器管理
- * Plugin Activity Container Manager (PACM)
+ * AllPluginsInfoPool Activity Container Manager (PACM)
  *
  * @author RePlugin Team
  */

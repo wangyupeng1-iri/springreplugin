@@ -27,9 +27,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.qihoo360.loader2.Constant;
+import com.qihoo360.loader2.AppConstant;
+import com.qihoo360.loader2.DownloadFileInfo;
 import com.qihoo360.loader2.PluginNativeLibsHelper;
-import com.qihoo360.loader2.V5FileInfo;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.RePluginInternal;
 import com.qihoo360.replugin.helper.JSONHelper;
@@ -125,10 +125,10 @@ public class PluginInfo implements Parcelable, Cloneable {
     private PluginInfo(String pkgName, String alias, int low, int high, int version, String path, int type) {
         // 如Low、High不正确，则给个默认值（等于应用的“最小支持协议版本”）
         if (low <= 0) {
-            low = Constant.ADAPTER_COMPATIBLE_VERSION;
+            low = AppConstant.ADAPTER_COMPATIBLE_VERSION;
         }
         if (high <= 0) {
-            high = Constant.ADAPTER_COMPATIBLE_VERSION;
+            high = AppConstant.ADAPTER_COMPATIBLE_VERSION;
         }
 
         mJson = new JSONObject();
@@ -233,8 +233,8 @@ public class PluginInfo implements Parcelable, Cloneable {
         }
 
         // 针对有问题的字段做除错处理
-        if (low <= 0) { low = Constant.ADAPTER_COMPATIBLE_VERSION; }
-        if (high <= 0) { high = Constant.ADAPTER_COMPATIBLE_VERSION; }
+        if (low <= 0) { low = AppConstant.ADAPTER_COMPATIBLE_VERSION; }
+        if (high <= 0) { high = AppConstant.ADAPTER_COMPATIBLE_VERSION; }
         if (ver <= 0) { ver = pi.versionCode; }
 
         PluginInfo pli = new PluginInfo(pn, alias, low, high, ver, path, PluginInfo.TYPE_NOT_INSTALL);
@@ -371,11 +371,11 @@ public class PluginInfo implements Parcelable, Cloneable {
         Context context = RePluginInternal.getAppContext();
         File dir;
         if (isPnPlugin()) {
-            dir = context.getDir(Constant.LOCAL_PLUGIN_SUB_DIR, 0);
+            dir = context.getDir(AppConstant.LOCAL_PLUGIN_SUB_DIR, 0);
         } else if (getIsPendingCover()) {
-            dir = context.getDir(Constant.LOCAL_PLUGIN_APK_COVER_DIR, 0);
+            dir = context.getDir(AppConstant.LOCAL_PLUGIN_APK_COVER_DIR, 0);
         } else {
-            dir = context.getDir(Constant.LOCAL_PLUGIN_APK_SUB_DIR, 0);
+            dir = context.getDir(AppConstant.LOCAL_PLUGIN_APK_SUB_DIR, 0);
         }
         return new File(dir, makeInstalledFileName() + ".jar");
     }
@@ -392,11 +392,11 @@ public class PluginInfo implements Parcelable, Cloneable {
         // 必须使用宿主的Context对象，防止出现“目录定位到插件内”的问题
         Context context = RePluginInternal.getAppContext();
         if (isPnPlugin()) {
-            return context.getDir(Constant.LOCAL_PLUGIN_ODEX_SUB_DIR, 0);
+            return context.getDir(AppConstant.LOCAL_PLUGIN_ODEX_SUB_DIR, 0);
         } else if (getIsPendingCover()) {
-            return context.getDir(Constant.LOCAL_PLUGIN_APK_COVER_DIR, 0);
+            return context.getDir(AppConstant.LOCAL_PLUGIN_APK_COVER_DIR, 0);
         } else {
-            return context.getDir(Constant.LOCAL_PLUGIN_APK_ODEX_SUB_DIR, 0);
+            return context.getDir(AppConstant.LOCAL_PLUGIN_APK_ODEX_SUB_DIR, 0);
         }
     }
 
@@ -425,11 +425,11 @@ public class PluginInfo implements Parcelable, Cloneable {
         Context context = RePluginInternal.getAppContext();
         File dir;
         if (isPnPlugin()) {
-            dir = context.getDir(Constant.LOCAL_PLUGIN_DATA_LIB_DIR, 0);
+            dir = context.getDir(AppConstant.LOCAL_PLUGIN_DATA_LIB_DIR, 0);
         } else if (getIsPendingCover()) {
-            dir = context.getDir(Constant.LOCAL_PLUGIN_APK_COVER_DIR, 0);
+            dir = context.getDir(AppConstant.LOCAL_PLUGIN_APK_COVER_DIR, 0);
         } else {
-            dir = context.getDir(Constant.LOCAL_PLUGIN_APK_LIB_DIR, 0);
+            dir = context.getDir(AppConstant.LOCAL_PLUGIN_APK_LIB_DIR, 0);
         }
         return new File(dir, makeInstalledFileName());
     }
@@ -575,7 +575,7 @@ public class PluginInfo implements Parcelable, Cloneable {
      * 获取最小支持宿主API的版本
      */
     public int getLowInterfaceApi() {
-        return mJson.optInt("low", Constant.ADAPTER_COMPATIBLE_VERSION);
+        return mJson.optInt("low", AppConstant.ADAPTER_COMPATIBLE_VERSION);
     }
 
     /**
@@ -584,7 +584,7 @@ public class PluginInfo implements Parcelable, Cloneable {
      * @deprecated 可能会废弃
      */
     public int getHighInterfaceApi() {
-        return mJson.optInt("high", Constant.ADAPTER_COMPATIBLE_VERSION);
+        return mJson.optInt("high", AppConstant.ADAPTER_COMPATIBLE_VERSION);
     }
 
     /**
@@ -833,7 +833,7 @@ public class PluginInfo implements Parcelable, Cloneable {
     private static final Pattern REGEX;
 
     static {
-        REGEX = Pattern.compile(Constant.LOCAL_PLUGIN_FILE_PATTERN);
+        REGEX = Pattern.compile(AppConstant.LOCAL_PLUGIN_FILE_PATTERN);
     }
 
     /**
@@ -877,7 +877,7 @@ public class PluginInfo implements Parcelable, Cloneable {
         int high = Integer.parseInt(r.group(3));
         int ver = Integer.parseInt(r.group(4));
         String path = f.getPath();
-        PluginInfo info = new PluginInfo(name, low, high, ver, TYPE_PN_INSTALLED, V5FileInfo.NONE_PLUGIN, path, -1, -1, -1, null);
+        PluginInfo info = new PluginInfo(name, low, high, ver, TYPE_PN_INSTALLED, DownloadFileInfo.NONE_PLUGIN, path, -1, -1, -1, null);
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "PluginInfo.build: found plugin, name=" + info.getName()
                     + " low=" + info.getLowInterfaceApi() + " high=" + info.getHighInterfaceApi()
@@ -896,8 +896,8 @@ public class PluginInfo implements Parcelable, Cloneable {
             }
             return null;
         }
-        int low = jo.optInt("low", Constant.ADAPTER_COMPATIBLE_VERSION);    // Low应指向最低兼容版本
-        int high = jo.optInt("high", Constant.ADAPTER_COMPATIBLE_VERSION);  // High同上
+        int low = jo.optInt("low", AppConstant.ADAPTER_COMPATIBLE_VERSION);    // Low应指向最低兼容版本
+        int high = jo.optInt("high", AppConstant.ADAPTER_COMPATIBLE_VERSION);  // High同上
         int ver = jo.optInt("ver");
         PluginInfo info = new PluginInfo(pkgName, name, low, high, ver, assetName, TYPE_BUILTIN);
 
@@ -1045,7 +1045,7 @@ public class PluginInfo implements Parcelable, Cloneable {
      * @deprecated 只用于旧的P-n插件，可能会废弃
      */
     public int getV5Type() {
-        return mJson.optInt("v5type", V5FileInfo.NONE_PLUGIN);
+        return mJson.optInt("v5type", DownloadFileInfo.NONE_PLUGIN);
     }
 
     /**

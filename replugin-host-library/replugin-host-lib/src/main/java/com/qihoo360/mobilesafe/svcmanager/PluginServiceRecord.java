@@ -22,8 +22,8 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.qihoo360.i.IPluginManager;
-import com.qihoo360.loader2.MP;
-import com.qihoo360.loader2.MP.PluginBinder;
+import com.qihoo360.loader2.RePluginOS;
+import com.qihoo360.loader2.RePluginOS.PluginBinder;
 import com.qihoo360.mobilesafe.core.BuildConfig;
 
 import java.util.ArrayList;
@@ -101,10 +101,10 @@ class PluginServiceRecord extends ReentrantLock {
 
         try {
             if (mPluginBinder == null) {
-                mPluginBinder = MP.fetchPluginBinder(mPluginName, IPluginManager.PROCESS_AUTO, mServiceName);
+                mPluginBinder = RePluginOS.fetchPluginBinder(mPluginName, IPluginManager.PROCESS_AUTO, mServiceName);
             }
 
-            // MP.fetchPluginBinder有可能出现：目标进程被系统回收的情况，进而导致DeadObjectException的情况
+            // RePluginOS.fetchPluginBinder有可能出现：目标进程被系统回收的情况，进而导致DeadObjectException的情况
             // 这样其方法的返回值自然就是Null了
             // Edited by Jiongxuan Zhang
             if (mPluginBinder == null) {

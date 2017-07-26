@@ -29,6 +29,7 @@ import static com.qihoo360.replugin.helper.LogDebug.PLUGIN_TAG;
 import static com.qihoo360.replugin.helper.LogRelease.LOGR;
 
 /**
+ * 关键类：替换mClassLoader
  * 对宿主的HostClassLoader做修改。这是RePlugin中唯一需要修改宿主私有属性的位置了
  *
  * @author RePlugin Team
@@ -79,7 +80,7 @@ public class PatchClassLoaderUtils {
             // 外界可自定义ClassLoader的实现，但一定要基于RePluginClassLoader类
             ClassLoader cl = RePlugin.getConfig().getCallbacks().createClassLoader(oClassLoader.getParent(), oClassLoader);
 
-            // 将新的ClassLoader写入mPackageInfo.mClassLoader
+            //关键点： 将新的ClassLoader写入mPackageInfo.mClassLoader
             ReflectUtils.writeField(oPackageInfo, "mClassLoader", cl);
 
             if (LOG) {

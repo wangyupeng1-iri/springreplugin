@@ -68,7 +68,7 @@ class PmHostSvc extends IPluginHost.Stub {
     /**
      *
      */
-    PmBase mPluginMgr;
+    PluginMgr mPluginMgr;
 
     /**
      *
@@ -106,7 +106,7 @@ class PmHostSvc extends IPluginHost.Stub {
      * | ...      | ...      | ...       | ...               |
      * -------------------------------------------------------
      * <p>
-     * Map < Action, Map < Plugin, List< Receiver >>>
+     * Map < Action, Map < AllPluginsInfoPool, List< Receiver >>>
      */
     private final HashMap<String, HashMap<String, List<String>>> mActionPluginComponents = new HashMap<>();
 
@@ -132,7 +132,7 @@ class PmHostSvc extends IPluginHost.Stub {
         }
     }
 
-    PmHostSvc(Context context, PmBase packm) {
+    PmHostSvc(Context context, PluginMgr packm) {
         mContext = context;
         mPluginMgr = packm;
         mServiceMgr = new PluginServiceServer(context);
@@ -248,7 +248,7 @@ class PmHostSvc extends IPluginHost.Stub {
 
     @Override
     public void regReceiver(String plugin, Map rcvFilMap) throws RemoteException {
-        PluginInfo pi = MP.getPlugin(plugin, false);
+        PluginInfo pi = RePluginOS.getPlugin(plugin, false);
         if (pi == null || pi.getFrameworkVersion() < 4) {
             return;
         }
@@ -304,7 +304,7 @@ class PmHostSvc extends IPluginHost.Stub {
 
     @Override
     public void updatePluginInfo(PluginInfo info) throws RemoteException {
-        Plugin p = null;
+        AllPluginsInfoPool p = null;
         p = mPluginMgr.getPlugin(info.getName());
         if (p != null) {
             p.replaceInfo(info);
@@ -337,7 +337,7 @@ class PmHostSvc extends IPluginHost.Stub {
             mPluginMgr.newPluginFound(pi, false);
 
             // 通知其它进程
-            Intent intent = new Intent(PmBase.ACTION_NEW_PLUGIN);
+            Intent intent = new Intent(PluginMgr.ACTION_NEW_PLUGIN);
             intent.putExtra(RePluginConstants.KEY_PERSIST_NEED_RESTART, mNeedRestart);
             intent.putExtra("obj", pi);
             IPC.sendLocalBroadcast2AllSync(mContext, intent);
@@ -352,9 +352,9 @@ class PmHostSvc extends IPluginHost.Stub {
 
     private PluginInfo pluginDownloadedForPn(String path) {
         File f = new File(path);
-        V5FileInfo v5f = V5FileInfo.build(f, V5FileInfo.NORMAL_PLUGIN);
+        DownloadFileInfo v5f = DownloadFileInfo.build(f, DownloadFileInfo.NORMAL_PLUGIN);
         if (v5f == null) {
-            v5f = V5FileInfo.build(f, V5FileInfo.INCREMENT_PLUGIN);
+            v5f = DownloadFileInfo.build(f, DownloadFileInfo.INCREMENT_PLUGIN);
             if (v5f == null) {
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "pluginDownloaded: unknown v5 plugin file: " + path);
@@ -366,7 +366,7 @@ class PmHostSvc extends IPluginHost.Stub {
             }
         }
 
-        File ddir = mContext.getDir(Constant.LOCAL_PLUGIN_SUB_DIR, 0);
+        File ddir = mContext.getDir(AppConstant.LOCAL_PLUGIN_SUB_DIR, 0);
         PluginInfo info = v5f.updateV5FileTo(mContext, ddir, false, true);
         if (info == null) {
             if (LOG) {
@@ -398,7 +398,7 @@ class PmHostSvc extends IPluginHost.Stub {
         mPluginMgr.newPluginFound(info, false);
 
         // 通知其它进程
-        Intent intent = new Intent(PmBase.ACTION_NEW_PLUGIN);
+        Intent intent = new Intent(PluginMgr.ACTION_NEW_PLUGIN);
         intent.putExtra(RePluginConstants.KEY_PERSIST_NEED_RESTART, mNeedRestart);
         intent.putExtra("obj", info);
         IPC.sendLocalBroadcast2AllSync(mContext, intent);
@@ -457,12 +457,12 @@ class PmHostSvc extends IPluginHost.Stub {
             LogDebug.d(PLUGIN_TAG, "sendIntent2Plugin target=" + target + " intent=" + intent);
         }
         // 通知目标插件进程（不包含UI进程）
-        if (!TextUtils.equals(target, Constant.PLUGIN_NAME_UI)) {
+        if (!TextUtils.equals(target, AppConstant.PLUGIN_NAME_UI)) {
             PluginProcessMain.sendIntent2Plugin(target, intent, sync);
         }
         // 如果插件Activity强制运行在UI，则通知UI
-        if (Constant.ENABLE_PLUGIN_ACTIVITY_AND_BINDER_RUN_IN_MAIN_UI_PROCESS) {
-            target = Constant.PLUGIN_NAME_UI;
+        if (AppConstant.ENABLE_PLUGIN_ACTIVITY_AND_BINDER_RUN_IN_MAIN_UI_PROCESS) {
+            target = AppConstant.PLUGIN_NAME_UI;
             PluginProcessMain.sendIntent2Plugin(target, intent, sync);
         }
     }

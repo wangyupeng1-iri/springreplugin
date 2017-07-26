@@ -23,11 +23,11 @@ import android.content.pm.ActivityInfo;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.qihoo360.i.Factory;
+import com.qihoo360.i.PluginsFactory;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.loader2.IPluginClient;
 import com.qihoo360.loader2.IPluginHost;
-import com.qihoo360.loader2.MP;
+import com.qihoo360.loader2.RePluginOS;
 import com.qihoo360.loader2.PluginBinderInfo;
 import com.qihoo360.loader2.PluginProcessMain;
 import com.qihoo360.replugin.component.ComponentList;
@@ -92,7 +92,7 @@ public class PluginReceiverProxy extends BroadcastReceiver {
                                 IPluginHost host = PluginProcessMain.getPluginHost();
                                 host.onReceive(plugin, receiver, intent);
                             } else {
-                                IPluginClient client = MP.startPluginProcess(plugin, process, new PluginBinderInfo(PluginBinderInfo.NONE_REQUEST));
+                                IPluginClient client = RePluginOS.startPluginProcess(plugin, process, new PluginBinderInfo(PluginBinderInfo.NONE_REQUEST));
                                 client.onReceive(plugin, receiver, intent);
                             }
 
@@ -123,7 +123,7 @@ public class PluginReceiverProxy extends BroadcastReceiver {
         if (!mReceiverProcess.containsKey(key)) {
 
             // 获得 ActivityInfo
-            ComponentList components = Factory.queryPluginComponentList(plugin);
+            ComponentList components = PluginsFactory.queryPluginComponentList(plugin);
             if (components != null) {
 
                 Map<String, ActivityInfo> receiverMap = components.getReceiverMap();

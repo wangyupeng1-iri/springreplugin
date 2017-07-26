@@ -53,9 +53,9 @@ import static com.qihoo360.replugin.helper.LogRelease.LOGR;
 /**
  * @author RePlugin Team
  */
-class Plugin {
+class AllPluginsInfoPool {
 
-    private static final String TAG = "Plugin";
+    private static final String TAG = "AllPluginsInfoPool";
 
     // 只加载Service/Activity/ProviderInfo信息（包含ComponentList）
     static final int LOAD_INFO = 0;
@@ -87,7 +87,7 @@ class Plugin {
     /**
      *
      */
-    static final HashMap<String, WeakReference<ClassLoader>> FILENAME_2_DEX = new HashMap<>();
+    static final HashMap<String, WeakReference<ClassLoader>> FILENAME_2_ClassLoader = new HashMap<>();
 
     /**
      *
@@ -142,7 +142,7 @@ class Plugin {
     /**
      *
      */
-    Loader mLoader;
+    PluginLoader mPluginLoader;
 
     /**
      * 跑在UI线程里的Handler对象
@@ -174,11 +174,11 @@ class Plugin {
         }
     }
 
-    static final Plugin build(PluginInfo info) {
-        return new Plugin(info);
+    static final AllPluginsInfoPool build(PluginInfo info) {
+        return new AllPluginsInfoPool(info);
     }
 
-    static final Plugin cloneAndReattach(Context c, Plugin p, ClassLoader parent, PluginCommImpl pm) {
+    static final AllPluginsInfoPool cloneAndReattach(Context c, AllPluginsInfoPool p, ClassLoader parent, PluginCommImpl pm) {
         if (p == null) {
             return null;
         }
@@ -215,12 +215,12 @@ class Plugin {
     static final ClassLoader queryCachedClassLoader(String filename) {
         ClassLoader dex = null;
         if (!TextUtils.isEmpty(filename)) {
-            synchronized (FILENAME_2_DEX) {
-                WeakReference<ClassLoader> ref = FILENAME_2_DEX.get(filename);
+            synchronized (FILENAME_2_ClassLoader) {
+                WeakReference<ClassLoader> ref = FILENAME_2_ClassLoader.get(filename);
                 if (ref != null) {
                     dex = ref.get();
                     if (dex == null) {
-                        FILENAME_2_DEX.remove(filename);
+                        FILENAME_2_ClassLoader.remove(filename);
                     }
                     if (LOG) {
                         LogDebug.d(PLUGIN_TAG, "cached Dex " + filename + " -> " + dex);
@@ -294,11 +294,11 @@ class Plugin {
         }
 
         ClassLoader dex = null;
-        synchronized (FILENAME_2_DEX) {
-            WeakReference<ClassLoader> ref = FILENAME_2_DEX.get(filename);
+        synchronized (FILENAME_2_ClassLoader) {
+            WeakReference<ClassLoader> ref = FILENAME_2_ClassLoader.get(filename);
             if (ref != null) {
                 dex = ref.get();
-                FILENAME_2_DEX.remove(filename);
+                FILENAME_2_ClassLoader.remove(filename);
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "clear Cached Dex " + filename + " -> " + dex);
                 }
@@ -368,7 +368,7 @@ class Plugin {
         }
     }
 
-    private Plugin(PluginInfo info) {
+    private AllPluginsInfoPool(PluginInfo info) {
         mInfo = info;
     }
 
@@ -390,10 +390,10 @@ class Plugin {
      * @return
      */
     final ClassLoader getClassLoader() {
-        if (mLoader == null) {
+        if (mPluginLoader == null) {
             return null;
         }
-        return mLoader.mClassLoader;
+        return mPluginLoader.mClassLoader;
     }
 
     /**
@@ -407,20 +407,20 @@ class Plugin {
      * @return
      */
     final boolean isLoaded() {
-        if (mLoader == null) {
+        if (mPluginLoader == null) {
             return false;
         }
-        return mLoader.isAppLoaded();
+        return mPluginLoader.isAppLoaded();
     }
 
     /**
      * @return
      */
     final boolean isPackageInfoLoaded() {
-        if (mLoader == null) {
+        if (mPluginLoader == null) {
             return false;
         }
-        return mLoader.isPackageInfoLoaded();
+        return mPluginLoader.isPackageInfoLoaded();
     }
 
     /**
@@ -428,7 +428,7 @@ class Plugin {
      */
     final boolean load(int load, boolean useCache) {
         PluginInfo info = mInfo;
-        boolean rc = loadLocked(load, useCache);
+        boolean rc = loadPluginLocked(load, useCache);
         // 尝试在此处调用Application.onCreate方法
         // Added by Jiongxuan Zhang
         if (load == LOAD_APP && rc) {
@@ -466,11 +466,11 @@ class Plugin {
             PackageInfo pi = queryCachedPackageInfo(filename);
             ComponentList cl = queryCachedComponentList(filename);
             if (pi != null && cl != null) {
-                mLoader = new Loader(mContext, mInfo.getName(), null, this);
-                mLoader.mPackageInfo = pi;
-                mLoader.mComponents = cl;
+                mPluginLoader = new PluginLoader(mContext, mInfo.getName(), null, this);
+                mPluginLoader.mPackageInfo = pi;
+                mPluginLoader.mComponents = cl;
                 if (LOG) {
-                    LogDebug.i(MAIN_TAG, "loadLocked(): Cached, pkgInfo loaded");
+                    LogDebug.i(MAIN_TAG, "loadPluginLocked(): Cached, pkgInfo loaded");
                 }
                 return true;
             }
@@ -482,12 +482,12 @@ class Plugin {
             PackageInfo pi = queryCachedPackageInfo(filename);
             ComponentList cl = queryCachedComponentList(filename);
             if (r != null && pi != null && cl != null) {
-                mLoader = new Loader(mContext, mInfo.getName(), null, this);
-                mLoader.mPkgResources = r;
-                mLoader.mPackageInfo = pi;
-                mLoader.mComponents = cl;
+                mPluginLoader = new PluginLoader(mContext, mInfo.getName(), null, this);
+                mPluginLoader.mPkgResources = r;
+                mPluginLoader.mPackageInfo = pi;
+                mPluginLoader.mComponents = cl;
                 if (LOG) {
-                    LogDebug.i(MAIN_TAG, "loadLocked(): Cached, resource loaded");
+                    LogDebug.i(MAIN_TAG, "loadPluginLocked(): Cached, resource loaded");
                 }
                 return true;
             }
@@ -500,13 +500,13 @@ class Plugin {
             ComponentList cl = queryCachedComponentList(filename);
             ClassLoader clzl = queryCachedClassLoader(filename);
             if (r != null && pi != null && cl != null && clzl != null) {
-                mLoader = new Loader(mContext, mInfo.getName(), null, this);
-                mLoader.mPkgResources = r;
-                mLoader.mPackageInfo = pi;
-                mLoader.mComponents = cl;
-                mLoader.mClassLoader = clzl;
+                mPluginLoader = new PluginLoader(mContext, mInfo.getName(), null, this);
+                mPluginLoader.mPkgResources = r;
+                mPluginLoader.mPackageInfo = pi;
+                mPluginLoader.mComponents = cl;
+                mPluginLoader.mClassLoader = clzl;
                 if (LOG) {
-                    LogDebug.i(MAIN_TAG, "loadLocked(): Cached, dex loaded");
+                    LogDebug.i(MAIN_TAG, "loadPluginLocked(): Cached, dex loaded");
                 }
                 return true;
             }
@@ -518,47 +518,47 @@ class Plugin {
      * @param load
      * @return
      */
-    private boolean loadLocked(int load, boolean useCache) {
+    private boolean loadPluginLocked(int load, boolean useCache) {
         // 若插件被“禁用”，则即便上次加载过（且进程一直活着），这次也不能再次使用了
         // Added by Jiongxuan Zhang
         int status = PluginStatusController.getStatus(mInfo.getName(), mInfo.getVersion());
         if (status < PluginStatusController.STATUS_OK) {
             if (LOG) {
-                LogDebug.d(PLUGIN_TAG, "loadLocked(): Disable in=" + mInfo.getName() + ":" + mInfo.getVersion() + "; st=" + status);
+                LogDebug.d(PLUGIN_TAG, "loadPluginLocked(): Disable in=" + mInfo.getName() + ":" + mInfo.getVersion() + "; st=" + status);
             }
             return false;
         }
         if (mInitialized) {
-            if (mLoader == null) {
+            if (mPluginLoader == null) {
                 if (LOG) {
-                    LogDebug.i(MAIN_TAG, "loadLocked(): Initialized but mLoader is Null");
+                    LogDebug.i(MAIN_TAG, "loadPluginLocked(): Initialized but mPluginLoader is Null");
                 }
                 return false;
             }
             if (load == LOAD_INFO) {
-                boolean rl = mLoader.isPackageInfoLoaded();
+                boolean rl = mPluginLoader.isPackageInfoLoaded();
                 if (LOG) {
-                    LogDebug.i(MAIN_TAG, "loadLocked(): Initialized, pkginfo loaded = " + rl);
+                    LogDebug.i(MAIN_TAG, "loadPluginLocked(): Initialized, pkginfo loaded = " + rl);
                 }
                 return rl;
             }
             if (load == LOAD_RESOURCES) {
-                boolean rl = mLoader.isResourcesLoaded();
+                boolean rl = mPluginLoader.isResourcesLoaded();
                 if (LOG) {
-                    LogDebug.i(MAIN_TAG, "loadLocked(): Initialized, resource loaded = " + rl);
+                    LogDebug.i(MAIN_TAG, "loadPluginLocked(): Initialized, resource loaded = " + rl);
                 }
                 return rl;
             }
             if (load == LOAD_DEX) {
-                boolean rl = mLoader.isDexLoaded();
+                boolean rl = mPluginLoader.isDexLoaded();
                 if (LOG) {
-                    LogDebug.i(MAIN_TAG, "loadLocked(): Initialized, dex loaded = " + rl);
+                    LogDebug.i(MAIN_TAG, "loadPluginLocked(): Initialized, dex loaded = " + rl);
                 }
                 return rl;
             }
-            boolean il = mLoader.isAppLoaded();
+            boolean il = mPluginLoader.isAppLoaded();
             if (LOG) {
-                LogDebug.i(MAIN_TAG, "loadLocked(): Initialized, is loaded = " + il);
+                LogDebug.i(MAIN_TAG, "loadPluginLocked(): Initialized, is loaded = " + il);
             }
             return il;
         }
@@ -604,10 +604,10 @@ class Plugin {
 
         //
         String logTag = "try1";
-        String lockFileName = String.format(Constant.LOAD_PLUGIN_LOCK, mInfo.getApkFile().getName());
+        String lockFileName = String.format(AppConstant.LOAD_PLUGIN_LOCK, mInfo.getApkFile().getName());
         ProcessLocker lock = new ProcessLocker(context, lockFileName);
         if (LOG) {
-            LogDebug.i(PLUGIN_TAG, "loadLocked(): Ready to lock! logtag = " + logTag + "; pn = " + mInfo.getName());
+            LogDebug.i(PLUGIN_TAG, "loadPluginLocked(): Ready to lock! logtag = " + logTag + "; pn = " + mInfo.getName());
         }
         if (!lock.tryLockTimeWait(5000, 10)) {
             // 此处仅仅打印错误
@@ -617,14 +617,14 @@ class Plugin {
         }
         //
         long t1 = System.currentTimeMillis();
-        boolean rc = doLoad(logTag, context, parent, manager, load);
+        boolean rc = doPluginLoad(logTag, context, parent, manager, load);
         if (LOG) {
             LogDebug.i(PLUGIN_TAG, "load " + mInfo.getPath() + " " + hashCode() + " c=" + load + " rc=" + rc + " delta=" + (System.currentTimeMillis() - t1));
         }
         //
         lock.unlock();
         if (LOG) {
-            LogDebug.i(PLUGIN_TAG, "loadLocked(): Unlock! logtag = " + logTag + "; pn = " + mInfo.getName());
+            LogDebug.i(PLUGIN_TAG, "loadPluginLocked(): Unlock! logtag = " + logTag + "; pn = " + mInfo.getName());
         }
         if (!rc) {
             if (LOGR) {
@@ -637,7 +637,7 @@ class Plugin {
             if (LOG && RePlugin.getConfig().isPrintDetailLog()) {
                 if (load == LOAD_DEX || load == LOAD_APP) {
                     LogDebug.printPluginInfo(mInfo, load);
-                    LogDebug.printMemoryStatus(LogDebug.TAG, "act=, loadLocked, flag=, End-1, pn=, " + mInfo.getName() + ", type=, " + load);
+                    LogDebug.printMemoryStatus(LogDebug.TAG, "act=, loadPluginLocked, flag=, End-1, pn=, " + mInfo.getName() + ", type=, " + load);
                 }
             }
             try {
@@ -662,7 +662,7 @@ class Plugin {
             }
         }
         // 清空数据对象
-        mLoader = null;
+        mPluginLoader = null;
         // 删除优化dex文件
         File odex = mInfo.getDexFile();
         if (odex.exists()) {
@@ -672,7 +672,7 @@ class Plugin {
             odex.delete();
         }
         t1 = System.currentTimeMillis();
-        rc = doLoad(logTag, context, parent, manager, load);
+        rc = doPluginLoad(logTag, context, parent, manager, load);
         if (LOG) {
             LogDebug.i(PLUGIN_TAG, "load2 " + mInfo.getPath() + " " + hashCode() + " c=" + load + " rc=" + rc + " delta=" + (System.currentTimeMillis() - t1));
         }
@@ -690,7 +690,7 @@ class Plugin {
         if (LOG && RePlugin.getConfig().isPrintDetailLog()) {
             if (load == LOAD_DEX || load == LOAD_APP) {
                 LogDebug.printPluginInfo(mInfo, load);
-                LogDebug.printMemoryStatus(LogDebug.TAG, "act=, loadLocked, flag=, End-2, pn=, " + mInfo.getName() + ", type=, " + load);
+                LogDebug.printMemoryStatus(LogDebug.TAG, "act=, loadPluginLocked, flag=, End-2, pn=, " + mInfo.getName() + ", type=, " + load);
             }
         }
 
@@ -707,12 +707,12 @@ class Plugin {
     }
 
     final IModule query(Class<? extends IModule> c) {
-        return mLoader.mPlugin.query(c);
+        return mPluginLoader.mPlugin.query(c);
     }
 
     final IBinder query(String binder) {
         try {
-            return mLoader.mBinderPlugin.mPlugin.query(binder);
+            return mPluginLoader.mBinderPlugin.mPlugin.query(binder);
         } catch (Throwable e) {
             if (LOGR) {
                 LogRelease.e(PLUGIN_TAG, "q.b.e.m" + e.getMessage(), e);
@@ -721,13 +721,16 @@ class Plugin {
         return null;
     }
 
-    private final boolean doLoad(String tag, Context context, ClassLoader parent, PluginCommImpl manager, int load) {
-        if (mLoader == null) {
+    private final boolean doPluginLoad(String tag, Context context, ClassLoader parent, PluginCommImpl manager, int load) {
+        if (mPluginLoader == null) {
             // 试图释放文件
             PluginInfo info = null;
+
+
             if (mInfo.getType() == PluginInfo.TYPE_BUILTIN) {
-                //
-                File dir = context.getDir(Constant.LOCAL_PLUGIN_SUB_DIR, 0);
+                //内置插件
+
+                File dir = context.getDir(AppConstant.LOCAL_PLUGIN_SUB_DIR, 0);
                 File dexdir = mInfo.getDexParentDir();
                 String dstName = mInfo.getApkFile().getName();
                 boolean rc = AssetsUtils.quickExtractTo(context, mInfo, dir.getAbsolutePath(), dstName, dexdir.getAbsolutePath());
@@ -746,17 +749,18 @@ class Plugin {
                 info.setType(PluginInfo.TYPE_PN_INSTALLED);
 
             } else if (mInfo.getType() == PluginInfo.TYPE_PN_JAR) {
-                //
-                V5FileInfo v5i = V5FileInfo.build(new File(mInfo.getPath()), mInfo.getV5Type());
-                if (v5i == null) {
+                //外部插件
+
+                DownloadFileInfo downloadFileInfo = DownloadFileInfo.build(new File(mInfo.getPath()), mInfo.getV5Type());
+                if (downloadFileInfo == null) {
                     // build v5 plugin info failed: plugin=
                     if (LOGR) {
                         LogRelease.e(PLUGIN_TAG, "p e b v i f " + mInfo);
                     }
                     return false;
                 }
-                File dir = context.getDir(Constant.LOCAL_PLUGIN_SUB_DIR, 0);
-                info = v5i.updateV5FileTo(context, dir, true, true);
+                File dir = context.getDir(AppConstant.LOCAL_PLUGIN_SUB_DIR, 0);
+                info = downloadFileInfo.updateV5FileTo(context, dir, true, true);
                 if (info == null) {
                     // update v5 file to failed: plugin=
                     if (LOGR) {
@@ -799,8 +803,8 @@ class Plugin {
             }
 
             //
-            mLoader = new Loader(context, mInfo.getName(), mInfo.getPath(), this);
-            if (!mLoader.loadDex(parent, load)) {
+            mPluginLoader = new PluginLoader(context, mInfo.getName(), mInfo.getPath(), this);
+            if (!mPluginLoader.loadDex(parent, load)) {
                 return false;
             }
 
@@ -828,13 +832,13 @@ class Plugin {
         }
 
         if (load == LOAD_INFO) {
-            return mLoader.isPackageInfoLoaded();
+            return mPluginLoader.isPackageInfoLoaded();
         } else if (load == LOAD_RESOURCES) {
-            return mLoader.isResourcesLoaded();
+            return mPluginLoader.isResourcesLoaded();
         } else if (load == LOAD_DEX) {
-            return mLoader.isDexLoaded();
+            return mPluginLoader.isDexLoaded();
         } else {
-            return mLoader.isAppLoaded();
+            return mPluginLoader.isAppLoaded();
         }
     }
 
@@ -843,7 +847,7 @@ class Plugin {
             if (LOGR) {
                 LogRelease.w(PLUGIN_TAG, "p.lel dm " + mInfo.getName());
             }
-            mLoader.mPlugin = new IPlugin() {
+            mPluginLoader.mPlugin = new IPlugin() {
                 @Override
                 public IModule query(Class<? extends IModule> c) {
                     return null;
@@ -851,18 +855,18 @@ class Plugin {
             };
         } else {
             if (LOG) {
-                LogDebug.d(PLUGIN_TAG, "Plugin.loadEntryLocked(): Load entry, info=" + mInfo);
+                LogDebug.d(PLUGIN_TAG, "AllPluginsInfoPool.loadEntryLocked(): Load entry, info=" + mInfo);
             }
-            if (mLoader.loadEntryMethod2()) {
-                if (!mLoader.invoke2(manager)) {
+            if (mPluginLoader.loadEntryMethod2()) {
+                if (!mPluginLoader.invoke2(manager)) {
                     return false;
                 }
-            } else if (mLoader.loadEntryMethod(false)) {
-                if (!mLoader.invoke(manager)) {
+            } else if (mPluginLoader.loadEntryMethod(false)) {
+                if (!mPluginLoader.invoke(manager)) {
                     return false;
                 }
-            } else if (mLoader.loadEntryMethod3()) {
-                if (!mLoader.invoke2(manager)) {
+            } else if (mPluginLoader.loadEntryMethod3()) {
+                if (!mPluginLoader.invoke2(manager)) {
                     return false;
                 }
             } else {
@@ -877,7 +881,7 @@ class Plugin {
 
     // 确保在UI线程中调用
     // ATTENTION 必须在LOCK锁之外调用此方法
-    //           否则一旦LOCK锁内任一位置再次调用Plugin.doLoad（如打开另一插件）时会造成循环锁
+    //           否则一旦LOCK锁内任一位置再次调用Plugin.doPluginLoad（如打开另一插件）时会造成循环锁
     // Added by Jiongxuan Zhang
     private void callApp() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -898,10 +902,10 @@ class Plugin {
         if (!mDummyPlugin) {
             // NOTE 不排除A的Application中调到了B，B又调回到A，这时需要isLoaded防止循环加载
             mApplicationClient = PluginApplicationClient.getOrCreate(
-                    mInfo.getName(), mLoader.mClassLoader, mLoader.mComponents, mLoader.mPluginObj.mInfo);
+                    mInfo.getName(), mPluginLoader.mClassLoader, mPluginLoader.mComponents, mPluginLoader.mPluginObj.mInfo);
 
             if (mApplicationClient != null && !mApplicationClient.isLoaded()) {
-                mApplicationClient.callAttachBaseContext(mLoader.mPkgContext);
+                mApplicationClient.callAttachBaseContext(mPluginLoader.mPkgContext);
                 mApplicationClient.callOnCreate();
             }
         } else {

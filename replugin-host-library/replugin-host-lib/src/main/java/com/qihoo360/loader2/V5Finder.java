@@ -38,7 +38,7 @@ public class V5Finder {
 
     static final void search(Context context, File pluginDir, PxAll all) {
         // 扫描V5下载目录
-        ArrayList<V5FileInfo> v5Plugins = new ArrayList<V5FileInfo>();
+        ArrayList<DownloadFileInfo> v5Plugins = new ArrayList<DownloadFileInfo>();
         {
             File dir = RePlugin.getConfig().getPnInstallDir();
             if (LOG) {
@@ -48,14 +48,14 @@ public class V5Finder {
         }
 
         // 同步V5原始插件文件到插件目录
-        for (V5FileInfo p : v5Plugins) {
+        for (DownloadFileInfo p : v5Plugins) {
 
             ProcessLocker lock = new ProcessLocker(RePluginInternal.getAppContext(), p.mFile.getParent(), p.mFile.getName() + ".lock");
 
             /**
              * 此处逻辑的详细介绍请参照
              *
-             * @see com.qihoo360.loader2.MP.pluginDownloaded(String path)
+             * @see RePluginOS.pluginDownloaded(String path)
              */
             if (lock.isLocked()) {
                 // 插件文件不可用，直接跳过
@@ -74,7 +74,7 @@ public class V5Finder {
         }
     }
 
-    private static final void searchV5Plugins(File dir, ArrayList<V5FileInfo> plugins) {
+    private static final void searchV5Plugins(File dir, ArrayList<DownloadFileInfo> plugins) {
         File files[] = dir.listFiles();
         if (files == null) {
             if (LOG) {
@@ -89,13 +89,13 @@ public class V5Finder {
             if (f.length() <= 0) {
                 continue;
             }
-            V5FileInfo p = null;
-            p = V5FileInfo.build(f, V5FileInfo.NORMAL_PLUGIN);
+            DownloadFileInfo p = null;
+            p = DownloadFileInfo.build(f, DownloadFileInfo.NORMAL_PLUGIN);
             if (p != null) {
                 plugins.add(p);
                 continue;
             }
-            p = V5FileInfo.build(f, V5FileInfo.INCREMENT_PLUGIN);
+            p = DownloadFileInfo.build(f, DownloadFileInfo.INCREMENT_PLUGIN);
             if (p != null) {
                 plugins.add(p);
                 continue;

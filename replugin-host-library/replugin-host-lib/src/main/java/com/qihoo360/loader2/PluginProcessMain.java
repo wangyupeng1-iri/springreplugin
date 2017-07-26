@@ -51,6 +51,8 @@ import static com.qihoo360.replugin.helper.LogRelease.LOGR;
  */
 public class PluginProcessMain {
 
+    private static final String TAG = PluginProcessMain.class.getSimpleName();
+
     private static final int STATE_UNUSED = 0;
 
     private static final int STATE_ALLOCATED = 1;
@@ -79,7 +81,7 @@ public class PluginProcessMain {
     /**
      * TODO 待重构 PROCESSES & ALL
      */
-    private static final ProcessRecord PROCESSES[] = new ProcessRecord[Constant.STUB_PROCESS_COUNT];
+    private static final ProcessRecord PROCESSES[] = new ProcessRecord[AppConstant.STUB_PROCESS_COUNT];
 
     /**
      * TODO 待重构 PROCESSES & ALL
@@ -88,7 +90,7 @@ public class PluginProcessMain {
     private static final Map<String, ProcessClientRecord> ALL = new HashMap<String, ProcessClientRecord>();
 
     static {
-        for (int i = 0; i < Constant.STUB_PROCESS_COUNT; i++) {
+        for (int i = 0; i < AppConstant.STUB_PROCESS_COUNT; i++) {
             ProcessRecord r = new ProcessRecord(i, STATE_UNUSED);
             PROCESSES[i] = r;
         }
@@ -284,23 +286,24 @@ public class PluginProcessMain {
      * 非常驻进程调用，获取常驻进程的 IPluginHost
      */
     static final void installHost() {
-        Context context = PMF.getApplicationContext();
+        Context context = PluginMgrFacade.getApplicationContext();
 
         //
         IBinder binder = PluginProviderStub.proxyFetchHostBinder(context);
         if (LOG) {
-            LogDebug.d(PLUGIN_TAG, "host binder = " + binder);
+            LogDebug.d(TAG, "host binder = " + binder);
         }
         if (binder == null) {
             // 无法连接到常驻进程，当前进程自杀
             if (LOGR) {
-                LogRelease.e(PLUGIN_TAG, "p.p fhb fail");
+                LogDebug.e(TAG, "Unable to connect to the resident process, the current process commits suicide");
             }
             System.exit(1);
         }
 
         //
         try {
+            //设置服务端"死亡"回调
             binder.linkToDeath(new IBinder.DeathRecipient() {
 
                 @Override
@@ -352,7 +355,7 @@ public class PluginProcessMain {
             System.exit(1);
         }
 
-        PMF.sPluginMgr.attach();
+        PluginMgrFacade.sPluginMgr.attach();
     }
 
     // @hide 内部框架使用
@@ -399,7 +402,7 @@ public class PluginProcessMain {
         synchronized (PROCESSES) {
             for (ProcessClientRecord r : ALL.values()) {
                 if (process == IPluginManager.PROCESS_UI) {
-                    if (!TextUtils.equals(r.plugin, Constant.PLUGIN_NAME_UI)) {
+                    if (!TextUtils.equals(r.plugin, AppConstant.PLUGIN_NAME_UI)) {
                         continue;
                     }
 
@@ -592,7 +595,7 @@ public class PluginProcessMain {
      */
     @Deprecated
     static final int allocProcess(String plugin, int process) {
-        if (Constant.PLUGIN_NAME_UI.equals(plugin) || process == IPluginManager.PROCESS_UI) {
+        if (AppConstant.PLUGIN_NAME_UI.equals(plugin) || process == IPluginManager.PROCESS_UI) {
             return IPluginManager.PROCESS_UI;
         }
 
@@ -719,7 +722,7 @@ public class PluginProcessMain {
     }
 
     static final void schedulePluginProcessLoop(long delayMillis) {
-        if (Constant.SIMPLE_QUIT_CONTROLLER) {
+        if (AppConstant.SIMPLE_QUIT_CONTROLLER) {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "schedule plugin process quit check: delay=" + (delayMillis / 1000));
             }
@@ -729,7 +732,7 @@ public class PluginProcessMain {
     }
 
     static final void cancelPluginProcessLoop() {
-        if (Constant.SIMPLE_QUIT_CONTROLLER) {
+        if (AppConstant.SIMPLE_QUIT_CONTROLLER) {
             Tasks.cancelThreadTask(CHECK);
         }
     }
@@ -996,7 +999,7 @@ public class PluginProcessMain {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "attach process: ui");
             }
-            return Constant.PLUGIN_NAME_UI;
+            return AppConstant.PLUGIN_NAME_UI;
         }
 
         /* 是否是用户自定义进程 */
@@ -1197,7 +1200,7 @@ public class PluginProcessMain {
     }
 
     private static final void doPluginProcessLoop() {
-        if (Constant.SIMPLE_QUIT_CONTROLLER) {
+        if (AppConstant.SIMPLE_QUIT_CONTROLLER) {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "do plugin process quit check");
             }

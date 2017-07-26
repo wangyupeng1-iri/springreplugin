@@ -44,7 +44,7 @@ class PluginTable {
     static final void dump(FileDescriptor fd, PrintWriter writer, String[] args) {
         if (LogDebug.DUMP_ENABLED) {
             writer.println("--- PluginTable.size = " + PLUGINS.size() + " ---");
-            List<PluginInfo> l = MP.getPlugins(false);
+            List<PluginInfo> l = RePluginOS.getPlugins(false);
             for (PluginInfo r : l) {
                 writer.println(r);
             }
@@ -52,9 +52,9 @@ class PluginTable {
         }
     }
 
-    static final void initPlugins(Map<String, Plugin> plugins) {
+    static final void initPlugins(Map<String, AllPluginsInfoPool> plugins) {
         synchronized (PLUGINS) {
-            for (Plugin plugin : plugins.values()) {
+            for (AllPluginsInfoPool plugin : plugins.values()) {
                 putPluginInfo(plugin.mInfo);
             }
         }
@@ -122,7 +122,7 @@ class PluginTable {
             LogDebug.d(PLUGIN_TAG, "build plugins");
         }
 
-        List<PluginInfo> lst = MP.getPlugins(false);
+        List<PluginInfo> lst = RePluginOS.getPlugins(false);
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "build " + lst.size() + " plugins");
         }

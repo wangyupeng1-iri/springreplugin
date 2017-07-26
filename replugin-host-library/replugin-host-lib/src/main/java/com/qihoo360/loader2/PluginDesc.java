@@ -84,7 +84,7 @@ public class PluginDesc {
                 Log.d(TAG, "load(): Change, Ready to load");
             }
             sMap = new HashMap<>();
-            load(PMF.getApplicationContext());
+            load(PluginMgrFacade.getApplicationContext());
 
             sChanged = false;
         }
@@ -196,7 +196,7 @@ public class PluginDesc {
                 }
             };
             IntentFilter filter = new IntentFilter(ACTION_UPDATE);
-            LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(PMF.getApplicationContext());
+            LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(PluginMgrFacade.getApplicationContext());
             lbm.registerReceiver(sUpdateReceiver, filter);
         }
     }

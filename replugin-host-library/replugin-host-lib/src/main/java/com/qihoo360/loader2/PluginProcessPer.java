@@ -52,20 +52,20 @@ class PluginProcessPer extends IPluginClient.Stub {
 
     private final Context mContext;
 
-    private final PmBase mPluginMgr;
+    private final PluginMgr mPluginMgr;
 
     final PluginServiceServer mServiceMgr;
 
     final PluginContainers mACM; // TODO 考虑去掉 {package}权限
 
-    private Plugin mDefaultPlugin;
+    private AllPluginsInfoPool mDefaultPlugin;
 
     /**
      * 保存 plugin-receiver -> Receiver 的关系
      */
     private HashMap<String, BroadcastReceiver> mReceivers = new HashMap<>();
 
-    PluginProcessPer(Context context, PmBase pm, int process, HashSet<String> containers) {
+    PluginProcessPer(Context context, PluginMgr pm, int process, HashSet<String> containers) {
         mContext = context;
         mPluginMgr = pm;
         mServiceMgr = new PluginServiceServer(context);
@@ -75,7 +75,7 @@ class PluginProcessPer extends IPluginClient.Stub {
         mACM.init(process, containers);
     }
 
-    final void init(Plugin p) {
+    final void init(AllPluginsInfoPool p) {
         mDefaultPlugin = p;
     }
 
@@ -104,7 +104,7 @@ class PluginProcessPer extends IPluginClient.Stub {
             LogDebug.d(PLUGIN_TAG, "PACM: loadActivityClass in=" + container + " target=" + activity + " plugin=" + plugin);
         }
 
-        Plugin p = mPluginMgr.loadAppPlugin(plugin);
+        AllPluginsInfoPool p = mPluginMgr.loadAppPlugin(plugin);
         if (p == null) {
             // PACM: loadActivityClass, not found plugin
             if (LOGR) {
@@ -139,7 +139,7 @@ class PluginProcessPer extends IPluginClient.Stub {
 
         String loadPlugin = null;
         // 如果UI进程启用，尝试使用传过来的插件，强制用UI进程
-        if (Constant.ENABLE_PLUGIN_ACTIVITY_AND_BINDER_RUN_IN_MAIN_UI_PROCESS) {
+        if (AppConstant.ENABLE_PLUGIN_ACTIVITY_AND_BINDER_RUN_IN_MAIN_UI_PROCESS) {
             if (IPC.isUIProcess()) {
                 loadPlugin = plugin;
                 process = IPluginManager.PROCESS_UI;
@@ -167,7 +167,7 @@ class PluginProcessPer extends IPluginClient.Stub {
 
     @Override
     public IBinder queryBinder(String plugin, String binder) throws RemoteException {
-        Plugin p = null;
+        AllPluginsInfoPool p = null;
         if (TextUtils.isEmpty(plugin)) {
             p = mDefaultPlugin;
         } else {
@@ -180,25 +180,25 @@ class PluginProcessPer extends IPluginClient.Stub {
             }
             return null;
         }
-        if (p.mLoader == null) {
+        if (p.mPluginLoader == null) {
             if (LOGR) {
                 LogRelease.e(PLUGIN_TAG, "q.b p l i n");
             }
             return null;
         }
-        if (p.mLoader.mBinderPlugin == null) {
+        if (p.mPluginLoader.mBinderPlugin == null) {
             if (LOGR) {
                 LogRelease.e(PLUGIN_TAG, "q.b p l b i n");
             }
             return null;
         }
-        if (p.mLoader.mBinderPlugin.mPlugin == null) {
+        if (p.mPluginLoader.mBinderPlugin.mPlugin == null) {
             if (LOGR) {
                 LogRelease.e(PLUGIN_TAG, "q.b p l b p i n");
             }
             return null;
         }
-        IBinder b = p.mLoader.mBinderPlugin.mPlugin.query(binder);
+        IBinder b = p.mPluginLoader.mBinderPlugin.mPlugin.query(binder);
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "PluginImpl.query: call plugin aidl: plugin=" + p.mInfo.getName() + " binder.name=" + binder + " binder.object=" + b);
         }
@@ -261,7 +261,7 @@ class PluginProcessPer extends IPluginClient.Stub {
     final String bindActivity(String plugin, int process, String activity, Intent intent) {
 
         /* 获取插件对象 */
-        Plugin p = mPluginMgr.loadAppPlugin(plugin);
+        AllPluginsInfoPool p = mPluginMgr.loadAppPlugin(plugin);
         if (p == null) {
             if (LOG) {
                 LogDebug.w(PLUGIN_TAG, "PACM: bindActivity: may be invalid plugin name or load plugin failed: plugin=" + plugin);
@@ -270,7 +270,7 @@ class PluginProcessPer extends IPluginClient.Stub {
         }
 
         /* 获取 ActivityInfo */
-        ActivityInfo ai = p.mLoader.mComponents.getActivity(activity);
+        ActivityInfo ai = p.mPluginLoader.mComponents.getActivity(activity);
         if (ai == null) {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "PACM: bindActivity: activity not found: activity=" + activity);
@@ -310,7 +310,7 @@ class PluginProcessPer extends IPluginClient.Stub {
         /* 检查 activity 是否存在 */
         Class<?> c = null;
         try {
-            c = p.mLoader.mClassLoader.loadClass(activity);
+            c = p.mPluginLoader.mClassLoader.loadClass(activity);
         } catch (Throwable e) {
             if (LOGR) {
                 LogRelease.e(PLUGIN_TAG, e.getMessage(), e);

@@ -33,12 +33,12 @@ import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
-import com.qihoo360.i.Factory;
+import com.qihoo360.i.PluginsFactory;
 import com.qihoo360.i.Factory2;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.loader2.CertUtils;
-import com.qihoo360.loader2.MP;
-import com.qihoo360.loader2.PMF;
+import com.qihoo360.loader2.RePluginOS;
+import com.qihoo360.loader2.PluginMgrFacade;
 import com.qihoo360.loader2.PluginStatusController;
 import com.qihoo360.mobilesafe.api.AppVar;
 import com.qihoo360.mobilesafe.api.Tasks;
@@ -56,7 +56,6 @@ import com.qihoo360.replugin.packages.PluginFastInstallProviderProxy;
 import com.qihoo360.replugin.packages.PluginInfoUpdater;
 import com.qihoo360.replugin.packages.PluginManagerProxy;
 import com.qihoo360.replugin.packages.PluginRunningList;
-import com.qihoo360.replugin.packages.RePluginInstaller;
 
 import java.io.File;
 import java.util.List;
@@ -100,8 +99,7 @@ public class RePlugin {
      * 安装此插件 <p>
      * 注意： <p>
      * 1、这里只将APK移动（或复制）到“插件路径”下，不释放优化后的Dex和Native库，不会加载插件 <p>
-     * 2、支持“纯APK”和“p-n”（旧版，即将废弃）插件 <p>
-     * 3、此方法是【同步】的，耗时较少
+     * 2、此方法是【同步】的，耗时较少
      *
      * @param path 插件安装的地址。必须是“绝对路径”。通常可以用context.getFilesDir()来做
      * @return 安装成功的插件信息，外界可直接读取
@@ -116,28 +114,18 @@ public class RePlugin {
         File file = new File(path);
         if (!file.exists()) {
             if (LogDebug.LOG) {
-                LogDebug.e(TAG, "install: File not exists. path=" + path);
+                LogDebug.e(TAG, "plugin install: File not exists. path=" + path);
             }
             return null;
         } else if (!file.isFile()) {
             if (LogDebug.LOG) {
-                LogDebug.e(TAG, "install: Not a valid file. path=" + path);
+                LogDebug.e(TAG, "plugin install: Not a valid file. path=" + path);
             }
             return null;
         }
 
-        // 若为p-n开头的插件，则必须是从宿主设置的“插件安装路径”上（默认为files目录）才能安装，其余均不允许
-        if (path.startsWith("p-n-")) {
-            String installPath = RePlugin.getConfig().getPnInstallDir().getAbsolutePath();
-            if (!path.startsWith(installPath)) {
-                if (LogDebug.LOG) {
-                    LogDebug.e(TAG, "install: Must be installed from the specified path. Path=" + path + "; Allowed=" + installPath);
-                }
-                return null;
-            }
-        }
 
-        return MP.pluginDownloaded(path);
+        return RePluginOS.pluginDownloaded(path);
     }
 
     /**
@@ -153,7 +141,7 @@ public class RePlugin {
         if (TextUtils.isEmpty(pluginName)) {
             throw new IllegalArgumentException();
         }
-        return MP.pluginUninstall(pluginName);
+        return RePluginOS.pluginUninstall(pluginName);
     }
 
     /**
@@ -235,7 +223,7 @@ public class RePlugin {
         }
         String plugin = cn.getPackageName();
         String cls = cn.getClassName();
-        return Factory.startActivityWithNoInjectCN(context, intent, plugin, cls, IPluginManager.PROCESS_AUTO);
+        return PluginsFactory.startActivityWithNoInjectCN(context, intent, plugin, cls, IPluginManager.PROCESS_AUTO);
     }
 
     /**
@@ -250,7 +238,7 @@ public class RePlugin {
      */
     public static boolean startActivity(Context context, Intent intent, String pluginName, String activity) {
         // TODO 先用旧的开启Activity方案，以后再优化
-        return Factory.startActivity(context, intent, pluginName, activity, IPluginManager.PROCESS_AUTO);
+        return PluginsFactory.startActivity(context, intent, pluginName, activity, IPluginManager.PROCESS_AUTO);
     }
 
     /**
@@ -263,7 +251,7 @@ public class RePlugin {
      * @since 2.1.3
      */
     public static boolean startActivityForResult(Activity activity, Intent intent, int requestCode) {
-        return Factory.startActivityForResult(activity, intent, requestCode, null);
+        return PluginsFactory.startActivityForResult(activity, intent, requestCode, null);
     }
 
     /**
@@ -277,7 +265,7 @@ public class RePlugin {
      * @since 2.1.3
      */
     public static boolean startActivityForResult(Activity activity, Intent intent, int requestCode, Bundle options) {
-        return Factory.startActivityForResult(activity, intent, requestCode, options);
+        return PluginsFactory.startActivityForResult(activity, intent, requestCode, options);
     }
 
     /**
@@ -364,7 +352,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static ComponentList fetchComponentList(String pluginName) {
-        return Factory.queryPluginComponentList(pluginName);
+        return PluginsFactory.queryPluginComponentList(pluginName);
     }
 
     /**
@@ -378,7 +366,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static PackageInfo fetchPackageInfo(String pluginName) {
-        return Factory.queryPluginPackageInfo(pluginName);
+        return PluginsFactory.queryPluginPackageInfo(pluginName);
     }
 
     /**
@@ -392,7 +380,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static Resources fetchResources(String pluginName) {
-        return Factory.queryPluginResouces(pluginName);
+        return PluginsFactory.queryPluginResouces(pluginName);
     }
 
     /**
@@ -405,7 +393,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static ClassLoader fetchClassLoader(String pluginName) {
-        return Factory.queryPluginClassLoader(pluginName);
+        return PluginsFactory.queryPluginClassLoader(pluginName);
     }
 
     /**
@@ -418,7 +406,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static Context fetchContext(String pluginName) {
-        return Factory.queryPluginContext(pluginName);
+        return PluginsFactory.queryPluginContext(pluginName);
     }
 
     /**
@@ -438,7 +426,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static IBinder fetchBinder(String pluginName, String module, String process) {
-        return Factory.query(pluginName, module, Integer.parseInt(process));
+        return PluginsFactory.query(pluginName, module, Integer.parseInt(process));
     }
 
     /**
@@ -457,7 +445,7 @@ public class RePlugin {
      * @since 2.1.0
      */
     public static IBinder fetchBinder(String pluginName, String module) {
-        return Factory.query(pluginName, module);
+        return PluginsFactory.query(pluginName, module);
     }
 
     /**
@@ -470,7 +458,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static String fetchPluginNameByClassLoader(ClassLoader cl) {
-        return Factory.fetchPluginName(cl);
+        return PluginsFactory.fetchPluginName(cl);
     }
 
     /**
@@ -480,7 +468,7 @@ public class RePlugin {
      * @since 2.0.0（1.x版本为getExistPlugins）
      */
     public static List<PluginInfo> getPluginInfoList() {
-        return MP.getPlugins(true);
+        return RePluginOS.getPlugins(true);
     }
 
     /**
@@ -491,7 +479,7 @@ public class RePlugin {
      * @since 1.2.0
      */
     public static PluginInfo getPluginInfo(String name) {
-        return MP.getPlugin(name, true);
+        return RePluginOS.getPlugin(name, true);
     }
 
     /**
@@ -502,7 +490,7 @@ public class RePlugin {
      * @since 2.0.0
      */
     public static int getPluginVersion(String name) {
-        PluginInfo pi = MP.getPlugin(name, false);
+        PluginInfo pi = RePluginOS.getPlugin(name, false);
         if (pi == null) {
             return -1;
         }
@@ -519,7 +507,7 @@ public class RePlugin {
      * @since 2.0.0 （1.x版本为isPluginExists）
      */
     public static boolean isPluginInstalled(String pluginName) {
-        PluginInfo pi = MP.getPlugin(pluginName, false);
+        PluginInfo pi = RePluginOS.getPlugin(pluginName, false);
         return pi != null;
     }
 
@@ -532,7 +520,7 @@ public class RePlugin {
      * @since 2.0.0
      */
     public static boolean isPluginUsed(String pluginName) {
-        PluginInfo pi = MP.getPlugin(pluginName, false);
+        PluginInfo pi = RePluginOS.getPlugin(pluginName, false);
         return pi != null && pi.isUsed();
     }
 
@@ -544,7 +532,7 @@ public class RePlugin {
      * @since 2.0.0 （原为isPluginInstalled）
      */
     public static boolean isPluginDexExtracted(String pluginName) {
-        PluginInfo pi = MP.getPlugin(pluginName, false);
+        PluginInfo pi = RePluginOS.getPlugin(pluginName, false);
         return pi != null && pi.isDexExtracted();
     }
 
@@ -637,7 +625,7 @@ public class RePlugin {
      * 注册“安装完成后的通知”广播 <p>
      * 此为“本地”广播，插件内也可以接收到。开发者也可以自行注册，做法： <p>
      * <code>
-     * IntentFilter itf = new IntentFilter(MP.ACTION_NEW_PLUGIN); <p>
+     * IntentFilter itf = new IntentFilter(RePluginOS.ACTION_NEW_PLUGIN); <p>
      * LocalBroadcastManager.getInstance(context).registerReceiver(r, itf);
      * </code>
      *
@@ -658,7 +646,7 @@ public class RePlugin {
      * @since 1.0.0
      */
     public static void registerHostBinder(IHostBinderFetcher hbf) {
-        MP.installBuiltinPlugin("main", hbf);
+        RePluginOS.installBuiltinPlugin("main", hbf);
     }
 
     /**
@@ -788,28 +776,6 @@ public class RePlugin {
     }
 
     /**
-     * 支持将APK转化成p-n-开头的插件（已经在360手机卫士80+个插件验证通过的方案），放入files目录，并返回其路径 <p>
-     * 注：由于目前卫士绝大多数插件还是p-n开头的，"纯APK"方案还没有经过大量测试，故这里将加入此接口。 <p>
-     * 具体做法： <p>
-     * <code>
-     * String pnPath = RePlugin.convertToPnFile(apkPath);
-     * RePlugin.install(pnPath);
-     * </code>
-     *
-     * @param path 要复制的路径
-     * @return 安装后的p-n的路径。如为Null表示转化成p-n时出现了问题
-     * @since 1.0.0
-     * @deprecated 临时方案，为360手机助手的早期而设计。正常情况下，请要么使用p-n方案，要么使用全新"纯APK"方案
-     */
-    public static String convertToPnFile(String path) {
-        File f = RePluginInstaller.covertToPnFile(RePluginInternal.getAppContext(), path);
-        if (f != null) {
-            return f.getAbsolutePath();
-        }
-        return null;
-    }
-
-    /**
      * RePlugin中，针对Application的入口类 <p>
      * 所有针对Application的调用应从此类开始
      *
@@ -883,8 +849,8 @@ public class RePlugin {
             // Plugin Status Controller
             PluginStatusController.setAppContext(app);
 
-            PMF.init(app);
-            PMF.callAttach();
+            PluginMgrFacade.init(app);
+            PluginMgrFacade.callAttach();
 
             sAttached = true;
         }
@@ -903,7 +869,7 @@ public class RePlugin {
 
             Tasks.init();
 
-            PMF.callAppCreate();
+            PluginMgrFacade.callAppCreate();
 
             // 注册监听PluginInfo变化的广播以接受来自常驻进程的更新
             if (!IPC.isPersistentProcess()) {

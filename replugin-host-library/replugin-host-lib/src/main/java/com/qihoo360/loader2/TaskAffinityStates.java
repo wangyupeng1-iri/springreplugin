@@ -91,7 +91,7 @@ class TaskAffinityStates {
             // 找到应该取第几个 TaskAffinity 中的坑
             int index = 0;
             try {
-                index = MP.getTaskAffinityGroupIndex(ai.taskAffinity);
+                index = RePluginOS.getTaskAffinityGroupIndex(ai.taskAffinity);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

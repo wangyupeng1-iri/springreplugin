@@ -226,7 +226,7 @@ public class Builder {
         for (PluginInfo p : all.getPlugins()) {
             names.add(p.getDexFile().getName());
         }
-        File dir = context.getDir(Constant.LOCAL_PLUGIN_ODEX_SUB_DIR, 0);
+        File dir = context.getDir(AppConstant.LOCAL_PLUGIN_ODEX_SUB_DIR, 0);
         File files[] = dir.listFiles();
         if (files != null) {
             for (File f : files) {
@@ -253,7 +253,7 @@ public class Builder {
             names.add(p.getNativeLibsDir().getName());
         }
 
-        File dir = context.getDir(Constant.LOCAL_PLUGIN_DATA_LIB_DIR, 0);
+        File dir = context.getDir(AppConstant.LOCAL_PLUGIN_DATA_LIB_DIR, 0);
         File files[] = dir.listFiles();
         if (files != null) {
             for (File f : files) {

@@ -25,7 +25,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.qihoo360.loader2.CertUtils;
-import com.qihoo360.loader2.MP;
+import com.qihoo360.loader2.RePluginOS;
 import com.qihoo360.loader2.PluginNativeLibsHelper;
 import com.qihoo360.mobilesafe.api.Tasks;
 import com.qihoo360.mobilesafe.utils.pkg.PackageFilesUtil;
@@ -149,7 +149,7 @@ public class PluginManagerServer {
         // NOTE 这里仅做双保险，或通过特殊渠道安装时会有用
 
         // 注意：这里必须用“非Clone过的”PluginInfo，因为要修改里面的内容
-        PluginInfo curPli = MP.getPlugin(instPli.getName(), false);
+        PluginInfo curPli = RePluginOS.getPlugin(instPli.getName(), false);
         if (curPli != null) {
             if (LogDebug.LOG) {
                 LogDebug.i(TAG, "installLocked: Has installed plugin. current=" + curPli);
@@ -447,7 +447,7 @@ public class PluginManagerServer {
     }
 
     private void updateUsedLocked(String pluginName, boolean used) {
-        PluginInfo pi = MP.getPlugin(pluginName, false);
+        PluginInfo pi = RePluginOS.getPlugin(pluginName, false);
         if (pi == null) {
             return;
         }
@@ -478,7 +478,7 @@ public class PluginManagerServer {
         if (LOG) {
             LogDebug.d(TAG, "Is running. Uninstall later! pn=" + info.getName());
         }
-        PluginInfo pi = MP.getPlugin(info.getName(), false);
+        PluginInfo pi = RePluginOS.getPlugin(info.getName(), false);
         if (pi == null) {
             return false;
         }

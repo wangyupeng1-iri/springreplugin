@@ -21,7 +21,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.qihoo360.loader2.MP;
+import com.qihoo360.loader2.RePluginOS;
 import com.qihoo360.mobilesafe.core.BuildConfig;
 import com.qihoo360.replugin.helper.LogRelease;
 
@@ -139,7 +139,7 @@ class PluginServiceManager {
                 }
                 return;
             }
-            MP.releasePluginBinder(pr.mPluginBinder);
+            RePluginOS.releasePluginBinder(pr.mPluginBinder);
 
             sRecordMap.remove(key);
         }

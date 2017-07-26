@@ -23,7 +23,7 @@ import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
-import com.qihoo360.loader2.MP;
+import com.qihoo360.loader2.RePluginOS;
 import com.qihoo360.replugin.base.IPC;
 import com.qihoo360.replugin.helper.LogDebug;
 import com.qihoo360.replugin.model.PluginInfo;
@@ -76,7 +76,7 @@ public class PluginInfoUpdater {
         }
 
         // 获取“不经过Clone”的PluginInfo，因为要修改
-        PluginInfo pi = MP.getPlugin(pn, false);
+        PluginInfo pi = RePluginOS.getPlugin(pn, false);
         if (pi == null) {
             return false;
         }

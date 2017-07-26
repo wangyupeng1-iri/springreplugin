@@ -42,17 +42,17 @@ public class RePluginCallbacks {
     }
 
     /**
-     * 创建【宿主用的】 RePluginClassLoader 对象以支持大多数插件化特征。默认为：RePluginClassLoader的实例
+     * 创建【宿主用的】 RePluginPathClassLoader 对象以支持大多数插件化特征。默认为：RePluginClassLoader的实例
      * <p>
      * 子类可复写此方法，来创建自己的ClassLoader，做相应的事情（如Hook宿主的ClassLoader做一些特殊的事）
      *
      * @param parent   该ClassLoader的父亲，通常为BootClassLoader
      * @param original 宿主的原ClassLoader，通常为PathClassLoader
      * @return 支持插件化方案的ClassLoader对象，可直接返回RePluginClassLoader
-     * @see RePluginClassLoader
+     * @see RePluginPathClassLoader
      */
-    public RePluginClassLoader createClassLoader(ClassLoader parent, ClassLoader original) {
-        return new RePluginClassLoader(parent, original);
+    public RePluginPathClassLoader createClassLoader(ClassLoader parent, ClassLoader original) {
+        return new RePluginPathClassLoader(parent, original);
     }
 
     /**

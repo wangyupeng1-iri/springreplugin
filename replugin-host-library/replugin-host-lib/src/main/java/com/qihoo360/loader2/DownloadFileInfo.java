@@ -49,7 +49,7 @@ import static com.qihoo360.replugin.helper.LogRelease.LOGR;
 /**
  * @author RePlugin Team
  */
-public class V5FileInfo {
+public class DownloadFileInfo {
 
     /**
      *
@@ -145,7 +145,7 @@ public class V5FileInfo {
      * @param type
      * @return
      */
-    static final V5FileInfo build(File f, int type) {
+    static final DownloadFileInfo build(File f, int type) {
         Matcher m = null;
         String fullname = f.getName();
         if (type == INCREMENT_PLUGIN) {
@@ -158,36 +158,36 @@ public class V5FileInfo {
             m = NORMAL_REGEX.matcher(fullname);
         }
         if (m == null || !m.matches()) {
-            if (Constant.LOG_V5_FILE_SEARCH) {
+            if (AppConstant.LOG_V5_FILE_SEARCH) {
                 if (LOG) {
-                    LogDebug.d(PLUGIN_TAG, "V5FileInfo.build: skip, no match1, type=" + type + " file=" + f.getAbsolutePath());
+                    LogDebug.d(PLUGIN_TAG, "DownloadFileInfo.build: skip, no match1, type=" + type + " file=" + f.getAbsolutePath());
                 }
             }
             return null;
         }
         MatchResult r = m.toMatchResult();
         if (r == null || r.groupCount() != 1) {
-            if (Constant.LOG_V5_FILE_SEARCH) {
+            if (AppConstant.LOG_V5_FILE_SEARCH) {
                 if (LOG) {
-                    LogDebug.d(PLUGIN_TAG, "V5FileInfo.build: skip, no match2, type=" + type + " file=" + f.getAbsolutePath());
+                    LogDebug.d(PLUGIN_TAG, "DownloadFileInfo.build: skip, no match2, type=" + type + " file=" + f.getAbsolutePath());
                 }
             }
             return null;
         }
         if (!f.exists() || !f.isFile()) {
-            if (Constant.LOG_V5_FILE_SEARCH) {
+            if (AppConstant.LOG_V5_FILE_SEARCH) {
                 if (LOG) {
-                    LogDebug.d(PLUGIN_TAG, "V5FileInfo.build: nor exist or file, file=" + f.getAbsolutePath());
+                    LogDebug.d(PLUGIN_TAG, "DownloadFileInfo.build: nor exist or file, file=" + f.getAbsolutePath());
                 }
             }
             return null;
         }
-        V5FileInfo p = new V5FileInfo();
+        DownloadFileInfo p = new DownloadFileInfo();
         p.mName = r.group(1);
         p.mFile = f;
         p.mType = type;
         if (LOG) {
-            LogDebug.d(PLUGIN_TAG, "V5FileInfo.build: found plugin, name=" + p.mName + " file=" + f.getAbsolutePath());
+            LogDebug.d(PLUGIN_TAG, "DownloadFileInfo.build: found plugin, name=" + p.mName + " file=" + f.getAbsolutePath());
         }
         return p;
     }
@@ -281,9 +281,9 @@ public class V5FileInfo {
                 return null;
             }
             // 如果插件版本太低，则返回
-            if (low < Constant.ADAPTER_COMPATIBLE_VERSION) {
+            if (low < AppConstant.ADAPTER_COMPATIBLE_VERSION) {
                 if (LOG) {
-                    LogDebug.d(PLUGIN_TAG, "update v5 plugin: not supported plugin.low=" + low + " host.compatible.ver=" + Constant.ADAPTER_COMPATIBLE_VERSION + " name=" + mName);
+                    LogDebug.d(PLUGIN_TAG, "update v5 plugin: not supported plugin.low=" + low + " host.compatible.ver=" + AppConstant.ADAPTER_COMPATIBLE_VERSION + " name=" + mName);
                 }
                 return null;
             }
@@ -456,14 +456,14 @@ public class V5FileInfo {
             return null;
         }
 
-        V5FileInfo p = V5FileInfo.build(f, V5FileInfo.NORMAL_PLUGIN);
+        DownloadFileInfo p = DownloadFileInfo.build(f, DownloadFileInfo.NORMAL_PLUGIN);
 
         if (p == null) {
-            p = V5FileInfo.build(f, V5FileInfo.INCREMENT_PLUGIN);
+            p = DownloadFileInfo.build(f, DownloadFileInfo.INCREMENT_PLUGIN);
         }
 
         if (p == null) {
-            p = V5FileInfo.build(f, V5FileInfo.MULTI_PLUGIN);
+            p = DownloadFileInfo.build(f, DownloadFileInfo.MULTI_PLUGIN);
         }
 
         if (LOG) {
@@ -471,7 +471,7 @@ public class V5FileInfo {
         }
 
         if (p != null) {
-            return p.updateV5FileTo(context, context.getDir(Constant.LOCAL_PLUGIN_SUB_DIR, 0), false, false, false);
+            return p.updateV5FileTo(context, context.getDir(AppConstant.LOCAL_PLUGIN_SUB_DIR, 0), false, false, false);
         }
 
         return null;

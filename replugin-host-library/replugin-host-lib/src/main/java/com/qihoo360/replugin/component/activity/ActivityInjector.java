@@ -28,7 +28,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
 
-import com.qihoo360.loader2.MP;
+import com.qihoo360.loader2.RePluginOS;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.RePluginInternal;
 import com.qihoo360.replugin.component.ComponentList;
@@ -57,7 +57,7 @@ public class ActivityInjector {
      */
     public static boolean inject(Activity activity, String plugin, String realActivity) {
         // 根据传进的参数来获取ActivityInfo
-        PluginInfo pi = MP.getPlugin(plugin, false);
+        PluginInfo pi = RePluginOS.getPlugin(plugin, false);
         if (pi == null) {
             return false;
         }

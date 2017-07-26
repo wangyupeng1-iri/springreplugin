@@ -28,7 +28,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import com.qihoo360.i.Factory;
+import com.qihoo360.i.PluginsFactory;
 import com.qihoo360.mobilesafe.parser.manifest.ManifestParser;
 import com.qihoo360.replugin.component.utils.ApkCommentReader;
 import com.qihoo360.replugin.component.utils.IntentMatcherHelper;
@@ -283,7 +283,7 @@ public class ComponentList {
                     Map<String, List<IntentFilter>> filters = ManifestParser.INS.getServiceFilterMap(plugin);
                     // 找到 plugin 插件中，IntentFilter 匹配成功的 Service
                     String service = IntentMatcherHelper.doMatchIntent(context, intent, filters);
-                    ServiceInfo info = Factory.queryServiceInfo(plugin, service);
+                    ServiceInfo info = PluginsFactory.queryServiceInfo(plugin, service);
                     if (info != null) {
                         return new Pair<>(info, plugin);
                     }
