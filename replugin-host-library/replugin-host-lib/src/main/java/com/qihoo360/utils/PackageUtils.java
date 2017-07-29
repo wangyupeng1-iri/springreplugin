@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.qihoo360.loader.utils;
+package com.qihoo360.utils;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;

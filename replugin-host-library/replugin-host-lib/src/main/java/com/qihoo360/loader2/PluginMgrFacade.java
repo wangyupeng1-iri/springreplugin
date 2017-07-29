@@ -26,7 +26,7 @@ import android.text.TextUtils;
 import com.qihoo360.i.PluginFactory;
 import com.qihoo360.i.Factory2;
 import com.qihoo360.i.IModule;
-import com.qihoo360.loader.utils.PatchClassLoaderUtils;
+import com.qihoo360.utils.PatchClassLoaderUtils;
 import com.qihoo360.replugin.helper.LogRelease;
 
 import java.io.FileDescriptor;

@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.qihoo360.loader.utils;
+package com.qihoo360.utils;
 
 import com.qihoo360.replugin.helper.LogRelease;
 import com.qihoo360.replugin.utils.CloseableUtils;

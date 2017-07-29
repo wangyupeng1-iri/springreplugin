@@ -18,7 +18,7 @@ package com.qihoo360.loader2;
 
 import android.content.Context;
 
-import com.qihoo360.loader.utils.ProcessLocker;
+import com.qihoo360.utils.ProcessLocker;
 import com.qihoo360.loader2.Builder.PxAll;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.RePluginInternal;

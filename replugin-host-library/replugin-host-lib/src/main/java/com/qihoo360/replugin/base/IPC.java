@@ -22,7 +22,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
-import com.qihoo360.loader.utils.SysUtils;
+import com.qihoo360.utils.SysUtils;
 import com.qihoo360.loader2.PluginProcessMain;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.helper.LogDebug;

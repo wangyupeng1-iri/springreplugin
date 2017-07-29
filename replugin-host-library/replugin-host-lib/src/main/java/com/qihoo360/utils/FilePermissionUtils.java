@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.qihoo360.loader.utils2;
+package com.qihoo360.utils;
 
 import com.qihoo360.replugin.utils.ReflectUtils;
 

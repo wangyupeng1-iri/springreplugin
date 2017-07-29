@@ -21,7 +21,7 @@ uploadArchives {
             repository(url: uri('/Users/roc/mvn/srpLib'))
             pom.groupId = 'com.qihoo360.replugin'
             pom.artifactId = 'replugin-host-lib'
-            pom.version = '3.0.0'
+            pom.version = version
         }
     }
 }

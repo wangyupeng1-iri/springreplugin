@@ -20,7 +20,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.Signature;
 import android.text.TextUtils;
 
-import com.qihoo360.loader.utils.StringUtils;
+import com.qihoo360.utils.StringUtils;
 import com.qihoo360.replugin.helper.LogDebug;
 import com.qihoo360.replugin.helper.LogRelease;
 

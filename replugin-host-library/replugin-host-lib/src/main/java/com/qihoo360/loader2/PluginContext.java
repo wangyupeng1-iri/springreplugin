@@ -33,7 +33,7 @@ import android.view.View;
 import android.view.ViewStub;
 
 import com.qihoo360.i.Factory2;
-import com.qihoo360.loader.utils2.FilePermissionUtils;
+import com.qihoo360.utils.FilePermissionUtils;
 import com.qihoo360.replugin.ContextInjector;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.component.service.PluginServiceClient;
