@@ -28,6 +28,9 @@
             android:value="[
             {'from':'com.qihoo360.replugin.sample.demo1:bg','to':'$p0'}
             ]" />
+        <meta-data
+            android:name="com.qihoo360.plugin.name"
+            android:value="demo1" />
 
         <activity
             android:name=".MainActivity"

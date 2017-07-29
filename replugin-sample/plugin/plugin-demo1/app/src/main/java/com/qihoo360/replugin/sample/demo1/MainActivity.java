@@ -71,6 +71,14 @@ public class MainActivity extends Activity {
         lv.setAdapter(new TestAdapter());
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Toast.makeText(this, "Welcome to MainActivity!", Toast.LENGTH_LONG).show();
+    }
+
     private void initData() {
         // TODO UI丑是丑了点儿，但能说明问题。以后会优化的
 
