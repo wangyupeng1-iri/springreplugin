@@ -13,30 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-buildscript {
-    repositories {
-        maven{
-            url "/Users/roc/mvn/srpLib"
-        }
-        mavenLocal()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'com.qihoo360.replugin:replugin-host-gradle:3.0.0'
-    }
-}
 
-allprojects {
+apply plugin: 'maven'
+uploadArchives {
     repositories {
-        maven{
-            url "/Users/roc/mvn/srpLib"
+        mavenDeployer {
+            repository(url: uri('/Users/roc/mvn/srpLib'))
+            pom.groupId = 'com.qihoo360.replugin'
+            pom.artifactId = 'replugin-host-lib'
+            pom.version = '3.0.0'
         }
-        mavenLocal()
-        jcenter()
     }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }

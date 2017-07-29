@@ -19,7 +19,6 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
-//apply from: 'config.gradle'
 
 repositories {
     jcenter()
@@ -112,4 +111,5 @@ publishing {
     }
 }
 
-apply from: 'bintray.gradle'
+//apply from: 'bintray.gradle'
+apply from: 'uploadLocalDir.gradle'

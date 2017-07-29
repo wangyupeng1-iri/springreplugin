@@ -46,4 +46,9 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     provided 'com.android.support:appcompat-v7:23.4.0'
 }
-apply from: 'bintray.gradle'
+
+/** 发布到jcenter */
+//apply from: 'bintray.gradle'
+
+/** 发布到本地文件夹 */
+apply from: 'uploadLocalDir.gradle'

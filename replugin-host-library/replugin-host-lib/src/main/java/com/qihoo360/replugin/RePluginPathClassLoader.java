@@ -136,7 +136,7 @@ public class RePluginPathClassLoader extends PathClassLoader {
             }
         } catch (IllegalAccessException e) {
             if (LOGR) {
-                LogDebug.d(TAG, "rpcl.cfv: fail! f=" + field);
+                LogDebug.d(TAG, "rpcl.cfv: fail! f=" + fieldStr);
             }
         }
     }

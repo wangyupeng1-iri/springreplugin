@@ -153,26 +153,6 @@ public class DebuggerReceivers {
         }
 
 
-        /**
-         * 安装"p-n-"开头的插件
-         *
-         * @param context
-         * @param intent
-         * @return 执行是否成功
-         */
-        private boolean doActionInstallWithPN(final Context context, final Intent intent) {
-
-            String path = intent.getStringExtra(PARAM_PATH);
-            String immediatelyText = intent.getStringExtra(PARAM_IMMEDIATELY);
-            boolean immediately = false;
-            if (TextUtils.equals(immediatelyText, "true")) {
-                immediately = true;
-            }
-
-            onInstallByPn(path, immediately);
-
-            return true;
-        }
 
         /**
          * @param context
@@ -209,8 +189,6 @@ public class DebuggerReceivers {
                 doActionInstall(context, intent);
             } else if (act.equals(actionUninstall)) {
                 doActionUninstall(context, intent);
-            } else if (act.equals(actionInstallWithPN)) {
-                doActionInstallWithPN(context, intent);
             } else if (act.equals(actionStartActivity)) {
                 doActionStartActivity(context, intent);
             }
@@ -221,16 +199,7 @@ public class DebuggerReceivers {
             return onInstall(path, immediately);
         }
 
-        private boolean onInstallByPn(String path, boolean imeediately) {
-            path = RePlugin.convertToPnFile(path);
-            if (TextUtils.isEmpty(path)) {
-                if (LogDebug.LOG) {
-                    LogDebug.e(TAG, "onInstallByPn: Error! path=" + path);
-                }
-                return false;
-            }
-            return onInstall(path, imeediately);
-        }
+
 
         private boolean onInstall(String path, boolean immediately) {
             PluginInfo pi = RePlugin.install(path);

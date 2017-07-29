@@ -19,7 +19,7 @@
  */
 apply plugin: 'com.android.library'
 
-version = "2.1.6"
+version = "3.0.0"
 group = 'com.qihoo360.replugin'  // 组名
 
 android {
@@ -53,4 +53,8 @@ dependencies {
     provided 'com.android.support:support-v4:25.2.0'
 }
 
-apply from: 'bintray.gradle'
+/** 发布到jcenter */
+//apply from: 'bintray.gradle'
+
+/** 发布到本地文件夹 */
+apply from: 'uploadLocalDir.gradle'
