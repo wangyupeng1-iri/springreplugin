@@ -15,17 +15,24 @@
  */
 buildscript {
     repositories {
+        maven{
+            //直接引入本地绝对地址的mvn仓库，或者拷贝别人本地的
+            url "/Users/roc/mvn/srpLib"
+        }
         mavenLocal()
         jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'com.qihoo360.replugin:replugin-plugin-gradle:2.1.6'
+        classpath 'com.qihoo360.replugin:replugin-plugin-gradle:3.0.0'
     }
 }
 
 allprojects {
     repositories {
+        maven{
+            url "/Users/roc/mvn/srpLib"
+        }
         mavenLocal()
         jcenter()
     }
