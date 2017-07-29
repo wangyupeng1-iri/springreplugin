@@ -25,11 +25,11 @@ import android.util.Log;
 
 import com.qihoo360.i.PluginFactory;
 import com.qihoo360.i.IPluginManager;
-import com.qihoo360.loader2.IPluginClient;
-import com.qihoo360.loader2.IPluginHost;
-import com.qihoo360.loader2.RePluginOS;
-import com.qihoo360.loader2.PluginBinderInfo;
-import com.qihoo360.loader2.PluginProcessMain;
+import com.qihoo360.loader.IPluginClient;
+import com.qihoo360.loader.IPluginHost;
+import com.qihoo360.loader.RePluginOS;
+import com.qihoo360.loader.PluginBinderInfo;
+import com.qihoo360.loader.PluginProcessMain;
 import com.qihoo360.replugin.component.ComponentList;
 import com.qihoo360.replugin.component.utils.PluginClientHelper;
 import com.qihoo360.replugin.helper.LogDebug;

@@ -76,7 +76,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        Toast.makeText(this, "Welcome to MainActivity!", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Welcome to MainActivity! v3.01", Toast.LENGTH_LONG).show();
     }
 
     private void initData() {

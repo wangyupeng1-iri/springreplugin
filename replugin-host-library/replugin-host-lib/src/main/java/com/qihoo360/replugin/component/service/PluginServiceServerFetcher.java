@@ -19,11 +19,11 @@ package com.qihoo360.replugin.component.service;
 import android.os.IBinder;
 
 import com.qihoo360.i.IPluginManager;
-import com.qihoo360.loader2.IPluginClient;
-import com.qihoo360.loader2.IPluginHost;
-import com.qihoo360.loader2.RePluginOS;
-import com.qihoo360.loader2.PluginBinderInfo;
-import com.qihoo360.loader2.PluginProcessMain;
+import com.qihoo360.loader.IPluginClient;
+import com.qihoo360.loader.IPluginHost;
+import com.qihoo360.loader.RePluginOS;
+import com.qihoo360.loader.PluginBinderInfo;
+import com.qihoo360.loader.PluginProcessMain;
 import com.qihoo360.mobilesafe.utils.basic.ArrayMap;
 import com.qihoo360.replugin.component.service.server.IPluginServiceServer;
 import com.qihoo360.replugin.helper.LogDebug;

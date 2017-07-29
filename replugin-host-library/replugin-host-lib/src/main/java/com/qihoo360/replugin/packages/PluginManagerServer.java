@@ -24,9 +24,9 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.qihoo360.loader2.CertUtils;
-import com.qihoo360.loader2.RePluginOS;
-import com.qihoo360.loader2.PluginNativeLibsHelper;
+import com.qihoo360.loader.CertUtils;
+import com.qihoo360.loader.RePluginOS;
+import com.qihoo360.loader.PluginNativeLibsHelper;
 import com.qihoo360.mobilesafe.api.Tasks;
 import com.qihoo360.mobilesafe.utils.pkg.PackageFilesUtil;
 import com.qihoo360.replugin.RePlugin;

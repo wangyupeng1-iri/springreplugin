@@ -24,7 +24,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.qihoo360.loader2.PluginMgrFacade;
+import com.qihoo360.loader.PluginMgrFacade;
 import com.qihoo360.replugin.base.IPC;
 import com.qihoo360.replugin.helper.LogDebug;
 import com.qihoo360.replugin.model.PluginInfo;

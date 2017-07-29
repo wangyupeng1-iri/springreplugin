@@ -20,7 +20,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.qihoo360.loader2.PluginMgrFacade;
+import com.qihoo360.loader.PluginMgrFacade;
 import com.qihoo360.replugin.helper.LogRelease;
 
 import static com.qihoo360.replugin.helper.LogDebug.PLUGIN_TAG;

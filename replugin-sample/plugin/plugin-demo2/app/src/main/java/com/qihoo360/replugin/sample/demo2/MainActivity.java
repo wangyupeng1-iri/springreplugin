@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
         TextView textView = new TextView(this);
         textView.setGravity(Gravity.CENTER);
         textView.setTextSize(30);
-        textView.setText("MainActivity of Plugin-Demo-2");
+        textView.setText("MainActivity of Plugin-Demo-2 v3.0");
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
         textView.setLayoutParams(lp2);
         root.addView(textView);

@@ -51,7 +51,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.btn_start_demo1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 刻意以“包名”来打开
+                // 刻意以“包名”来打开(注意这样配置后，插件apk的meta-data就不要配置别名了，否则包名不生效，强烈推荐别名方式)
                 RePlugin.startActivity(MainActivity.this, RePlugin.createIntent("com.qihoo360.replugin.sample.demo1", "com.qihoo360.replugin.sample.demo1.MainActivity"));
             }
         });

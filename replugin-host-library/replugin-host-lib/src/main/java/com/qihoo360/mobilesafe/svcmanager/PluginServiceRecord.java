@@ -22,8 +22,8 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.qihoo360.i.IPluginManager;
-import com.qihoo360.loader2.RePluginOS;
-import com.qihoo360.loader2.RePluginOS.PluginBinder;
+import com.qihoo360.loader.RePluginOS;
+import com.qihoo360.loader.RePluginOS.PluginBinder;
 import com.qihoo360.mobilesafe.core.BuildConfig;
 
 import java.util.ArrayList;

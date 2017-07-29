@@ -18,7 +18,7 @@ package com.qihoo360.replugin.component.service.server;
 
 import android.content.Context;
 
-import com.qihoo360.loader2.mgr.IServiceConnection;
+import com.qihoo360.loader.mgr.IServiceConnection;
 
 /**
  * 用来表示一个BindService的连接

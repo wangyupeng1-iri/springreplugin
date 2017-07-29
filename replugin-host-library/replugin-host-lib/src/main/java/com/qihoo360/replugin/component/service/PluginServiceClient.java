@@ -30,7 +30,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.qihoo360.i.PluginFactory;
-import com.qihoo360.loader2.PluginMgrFacade;
+import com.qihoo360.loader.PluginMgrFacade;
 import com.qihoo360.replugin.component.ComponentList;
 import com.qihoo360.replugin.component.service.server.IPluginServiceServer;
 import com.qihoo360.replugin.component.utils.PluginClientHelper;

@@ -19,7 +19,7 @@ package com.qihoo360.utils;
 import android.content.Context;
 import android.util.Log;
 
-import com.qihoo360.loader2.PluginNativeLibsHelper;
+import com.qihoo360.loader.PluginNativeLibsHelper;
 import com.qihoo360.replugin.helper.LogDebug;
 import com.qihoo360.replugin.helper.LogRelease;
 import com.qihoo360.replugin.model.PluginInfo;

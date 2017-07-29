@@ -61,7 +61,7 @@ public class PluginServiceClient {
 
         public static void initLocked(final ClassLoader classLoader) {
             //
-            final String rePluginServiceClient = "com.qihoo360.loader2.mgr.PluginServiceClient";
+            final String rePluginServiceClient = "com.qihoo360.loader.mgr.PluginServiceClient";
             stopSelf = new MethodInvoker(classLoader, rePluginServiceClient, "stopSelf", new Class<?>[]{Service.class});
         }
     }

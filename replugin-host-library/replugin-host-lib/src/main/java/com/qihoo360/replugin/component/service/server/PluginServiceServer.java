@@ -29,7 +29,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.qihoo360.i.PluginFactory;
-import com.qihoo360.loader2.mgr.IServiceConnection;
+import com.qihoo360.loader.mgr.IServiceConnection;
 import com.qihoo360.mobilesafe.core.BuildConfig;
 import com.qihoo360.mobilesafe.utils.basic.ArrayMap;
 import com.qihoo360.replugin.RePlugin;

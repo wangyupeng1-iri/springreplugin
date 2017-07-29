@@ -16,7 +16,7 @@
 
 apply plugin: 'com.android.library'
 
-version = "2.1.6"
+version = "3.0.6"
 group = 'com.qihoo360.replugin'  // 组名
 
 android {

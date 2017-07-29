@@ -22,7 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.qihoo360.loader2.PluginLibraryInternalProxy;
+import com.qihoo360.loader.PluginLibraryInternalProxy;
 
 import org.json.JSONArray;
 

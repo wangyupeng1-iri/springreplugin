@@ -213,7 +213,7 @@ public class PluginProviderClient {
 
         public static void initLocked(final ClassLoader classLoader) {
             //
-            String rePluginProviderClient = "com.qihoo360.loader2.mgr.PluginProviderClient";
+            String rePluginProviderClient = "com.qihoo360.loader.mgr.PluginProviderClient";
             query = new MethodInvoker(classLoader, rePluginProviderClient, "query", new Class<?>[]{Context.class, Uri.class, String[].class, String.class, String[].class, String.class});
             query2 = new MethodInvoker(classLoader, rePluginProviderClient, "query", new Class<?>[]{Context.class, Uri.class, String[].class, String.class, String[].class, String.class, CancellationSignal.class});
             insert = new MethodInvoker(classLoader, rePluginProviderClient, "insert", new Class<?>[]{Context.class, Uri.class, ContentValues.class});

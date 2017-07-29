@@ -21,7 +21,7 @@ import android.content.Context;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-import com.qihoo360.loader2.IPlugin;
+import com.qihoo360.loader.IPlugin;
 
 /**
  * @author RePlugin Team

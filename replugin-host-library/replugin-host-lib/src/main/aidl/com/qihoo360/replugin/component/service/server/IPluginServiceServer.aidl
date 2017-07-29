@@ -3,7 +3,7 @@ package com.qihoo360.replugin.component.service.server;
 import android.content.ComponentName;
 import android.os.Messenger;
 
-import com.qihoo360.loader2.mgr.IServiceConnection;
+import com.qihoo360.loader.mgr.IServiceConnection;
 
 /**
  * 负责Server端的服务调度、提供等工作，是服务的提供方，核心类之一

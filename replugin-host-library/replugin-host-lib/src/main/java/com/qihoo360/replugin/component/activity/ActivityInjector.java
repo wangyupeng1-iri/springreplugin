@@ -28,7 +28,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
 
-import com.qihoo360.loader2.RePluginOS;
+import com.qihoo360.loader.RePluginOS;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.RePluginInternal;
 import com.qihoo360.replugin.component.ComponentList;

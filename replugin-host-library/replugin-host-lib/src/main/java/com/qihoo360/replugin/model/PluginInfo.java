@@ -27,9 +27,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.qihoo360.loader2.AppConstant;
-import com.qihoo360.loader2.DownloadFileInfo;
-import com.qihoo360.loader2.PluginNativeLibsHelper;
+import com.qihoo360.loader.AppConstant;
+import com.qihoo360.loader.DownloadFileInfo;
+import com.qihoo360.loader.PluginNativeLibsHelper;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.RePluginInternal;
 import com.qihoo360.replugin.helper.JSONHelper;

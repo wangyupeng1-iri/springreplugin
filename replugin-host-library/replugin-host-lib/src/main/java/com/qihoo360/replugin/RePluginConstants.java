@@ -35,7 +35,7 @@ public class RePluginConstants {
      *
      * @see RePlugin#registerInstalledReceiver(android.content.Context, android.content.BroadcastReceiver)
      */
-    public static final String ACTION_NEW_PLUGIN = "com.qihoo360.loader2.ACTION_NEW_PLUGIN";
+    public static final String ACTION_NEW_PLUGIN = "com.qihoo360.loader.ACTION_NEW_PLUGIN";
 
     /**
      * 安装插件的广播

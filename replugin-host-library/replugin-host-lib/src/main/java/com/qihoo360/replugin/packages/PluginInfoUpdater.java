@@ -23,7 +23,7 @@ import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
-import com.qihoo360.loader2.RePluginOS;
+import com.qihoo360.loader.RePluginOS;
 import com.qihoo360.replugin.base.IPC;
 import com.qihoo360.replugin.helper.LogDebug;
 import com.qihoo360.replugin.model.PluginInfo;

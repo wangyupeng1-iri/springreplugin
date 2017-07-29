@@ -29,7 +29,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.text.TextUtils;
 
-import com.qihoo360.loader2.PluginCommImpl;
+import com.qihoo360.loader.PluginCommImpl;
 import com.qihoo360.mobilesafe.core.BuildConfig;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.component.ComponentList;

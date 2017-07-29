@@ -21,7 +21,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
-import com.qihoo360.loader2.PluginProviderStub;
+import com.qihoo360.loader.PluginProviderStub;
 import com.qihoo360.replugin.base.IPC;
 
 /**
