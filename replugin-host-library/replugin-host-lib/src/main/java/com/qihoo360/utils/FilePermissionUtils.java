@@ -16,8 +16,6 @@
 
 package com.qihoo360.utils;
 
-import com.qihoo360.replugin.utils.ReflectUtils;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 

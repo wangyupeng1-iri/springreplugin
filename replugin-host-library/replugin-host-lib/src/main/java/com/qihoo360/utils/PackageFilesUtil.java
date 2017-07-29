@@ -15,7 +15,7 @@
  * the License.
  */
 
-package com.qihoo360.mobilesafe.utils.pkg;
+package com.qihoo360.utils;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -25,7 +25,7 @@ import com.qihoo360.mobilesafe.core.BuildConfig;
 import com.qihoo360.replugin.helper.LogRelease;
 import com.qihoo360.replugin.model.PluginInfo;
 
-import com.qihoo360.replugin.utils.FileUtils;
+import com.qihoo360.utils.FileUtils;
 
 import java.io.DataInputStream;
 import java.io.File;

@@ -22,7 +22,6 @@ import android.util.Log;
 
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.helper.LogRelease;
-import com.qihoo360.replugin.utils.ReflectUtils;
 
 import static com.qihoo360.replugin.helper.LogDebug.LOG;
 import static com.qihoo360.replugin.helper.LogDebug.PLUGIN_TAG;

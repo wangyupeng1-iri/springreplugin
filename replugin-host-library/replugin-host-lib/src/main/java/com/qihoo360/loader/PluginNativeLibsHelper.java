@@ -19,11 +19,11 @@ package com.qihoo360.loader;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.qihoo360.replugin.utils.CloseableUtils;
+import com.qihoo360.utils.CloseableUtils;
 import com.qihoo360.mobilesafe.core.BuildConfig;
 import com.qihoo360.replugin.helper.LogDebug;
 
-import com.qihoo360.replugin.utils.FileUtils;
+import com.qihoo360.utils.FileUtils;
 
 import java.io.File;
 import java.io.IOException;

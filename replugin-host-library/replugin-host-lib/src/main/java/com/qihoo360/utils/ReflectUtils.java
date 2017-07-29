@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.qihoo360.replugin.utils;
+package com.qihoo360.utils;
 
 import android.content.Context;
 

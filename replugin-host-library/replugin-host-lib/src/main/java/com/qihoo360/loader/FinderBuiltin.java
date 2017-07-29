@@ -19,13 +19,13 @@ package com.qihoo360.loader;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.qihoo360.replugin.utils.Charsets;
-import com.qihoo360.replugin.utils.CloseableUtils;
+import com.qihoo360.utils.Charsets;
+import com.qihoo360.utils.CloseableUtils;
 import com.qihoo360.loader.Builder.PxAll;
 import com.qihoo360.replugin.helper.LogDebug;
 import com.qihoo360.replugin.model.PluginInfo;
 
-import com.qihoo360.replugin.utils.IOUtils;
+import com.qihoo360.utils.IOUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;

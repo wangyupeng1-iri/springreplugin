@@ -16,7 +16,7 @@
 
 package com.qihoo360.replugin.helper;
 
-import com.qihoo360.replugin.utils.ReflectUtils;
+import com.qihoo360.utils.ReflectUtils;
 
 /**
  * 从宿主的 RePluginHostConfig 中获取一些字段值，

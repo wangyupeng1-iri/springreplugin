@@ -23,7 +23,6 @@ import android.os.Build;
 import android.util.DisplayMetrics;
 
 import com.qihoo360.replugin.helper.LogDebug;
-import com.qihoo360.replugin.utils.ReflectUtils;
 
 import java.io.File;
 

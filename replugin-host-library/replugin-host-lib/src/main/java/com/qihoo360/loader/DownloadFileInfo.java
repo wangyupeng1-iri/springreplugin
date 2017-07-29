@@ -20,17 +20,17 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-import com.qihoo360.replugin.utils.CloseableUtils;
+import com.qihoo360.utils.CloseableUtils;
 import com.qihoo360.utils.PackageUtils;
 import com.qihoo360.utils.StringUtils;
-import com.qihoo360.mobilesafe.utils.basic.SecurityUtil;
+import com.qihoo360.utils.SecurityUtil;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.RePluginInternal;
 import com.qihoo360.replugin.helper.LogDebug;
 import com.qihoo360.replugin.helper.LogRelease;
 import com.qihoo360.replugin.model.PluginInfo;
 
-import com.qihoo360.replugin.utils.FileUtils;
+import com.qihoo360.utils.FileUtils;
 
 import java.io.DataInputStream;
 import java.io.File;

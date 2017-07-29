@@ -32,7 +32,7 @@ import android.text.TextUtils;
 import com.qihoo360.i.PluginFactory;
 import com.qihoo360.i.IModule;
 import com.qihoo360.i.IPluginManager;
-import com.qihoo360.replugin.utils.ReflectUtils;
+import com.qihoo360.utils.ReflectUtils;
 import com.qihoo360.mobilesafe.api.Tasks;
 import com.qihoo360.replugin.IHostBinderFetcher;
 import com.qihoo360.replugin.RePlugin;

@@ -31,7 +31,7 @@ import android.util.Log;
 import com.qihoo360.i.PluginFactory;
 import com.qihoo360.loader.mgr.IServiceConnection;
 import com.qihoo360.mobilesafe.core.BuildConfig;
-import com.qihoo360.mobilesafe.utils.basic.ArrayMap;
+import com.qihoo360.utils.ArrayMap;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.base.IPC;
 import com.qihoo360.replugin.base.ThreadUtils;

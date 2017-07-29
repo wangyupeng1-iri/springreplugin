@@ -18,7 +18,7 @@ package com.qihoo360.replugin;
 
 import android.os.Build;
 
-import com.qihoo360.replugin.utils.ReflectUtils;
+import com.qihoo360.utils.ReflectUtils;
 import com.qihoo360.utils.StringUtils;
 import com.qihoo360.loader.PluginMgrFacade;
 import com.qihoo360.replugin.base.IPC;

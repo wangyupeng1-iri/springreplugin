@@ -106,10 +106,10 @@
     public *;
 }
 # Old PPC/PSC
--keep class com.qihoo360.loader2.mgr.PluginProviderClient {
+-keep class com.qihoo360.loader.mgr.PluginProviderClient {
     public protected *;
 }
--keep class com.qihoo360.loader2.mgr.PluginServiceClient {
+-keep class com.qihoo360.loader.mgr.PluginServiceClient {
     public protected *;
 }
 

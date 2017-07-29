@@ -25,7 +25,7 @@ import android.os.RemoteException;
 import android.util.AndroidRuntimeException;
 
 import com.qihoo360.loader.mgr.IServiceConnection;
-import com.qihoo360.mobilesafe.utils.basic.ArrayMap;
+import com.qihoo360.utils.ArrayMap;
 
 import java.lang.ref.WeakReference;
 

@@ -16,7 +16,7 @@
 
 package com.qihoo360.replugin;
 
-import com.qihoo360.replugin.utils.ReflectUtils;
+import com.qihoo360.utils.ReflectUtils;
 import com.qihoo360.replugin.helper.LogDebug;
 
 import java.lang.reflect.InvocationTargetException;
