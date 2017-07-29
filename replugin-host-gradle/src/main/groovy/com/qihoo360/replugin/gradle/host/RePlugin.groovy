@@ -267,8 +267,8 @@ class RepluginConfig {
     /** assert目录下放置插件文件的目录自定义,默认是 assert 的 "plugins" */
     def pluginDir = "plugins"
 
-    /** 插件文件的后缀自定义,默认是".jar" 暂时支持 jar 格式*/
-    def pluginFilePostfix = ".jar"
+    /** 插件文件的后缀自定义,默认是".apk"*/
+    def pluginFilePostfix = ".apk"
 
     /** 当发现插件目录下面有不合法的插件 jar (有可能是特殊定制 jar)时是否停止构建,默认是 true */
     def enablePluginFileIllegalStopBuild = true

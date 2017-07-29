@@ -74,7 +74,7 @@ import java.util.List;
  * </ul>
  *
  * @author RePlugin Team
- * @deprecated 慢慢会被废弃掉，只留着旧卫士插件反射用。现阶段先不做优化
+ *
  */
 public final class PluginFactory {
 
