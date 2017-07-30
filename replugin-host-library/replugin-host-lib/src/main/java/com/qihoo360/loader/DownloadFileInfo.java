@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import com.qihoo360.utils.CertUtils;
 import com.qihoo360.utils.CloseableUtils;
 import com.qihoo360.utils.PackageUtils;
 import com.qihoo360.utils.StringUtils;

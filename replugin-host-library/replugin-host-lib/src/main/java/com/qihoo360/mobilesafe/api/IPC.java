@@ -22,7 +22,7 @@ import android.content.Intent;
 import android.text.TextUtils;
 
 import com.qihoo360.replugin.RePluginInternal;
-import com.qihoo360.replugin.base.AMSUtils;
+import com.qihoo360.utils.AMSUtils;
 
 import java.util.List;
 

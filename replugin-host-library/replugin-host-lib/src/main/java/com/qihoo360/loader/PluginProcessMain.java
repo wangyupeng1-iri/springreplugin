@@ -26,7 +26,7 @@ import android.text.TextUtils;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.mobilesafe.api.Tasks;
 import com.qihoo360.replugin.RePluginInternal;
-import com.qihoo360.replugin.base.AMSUtils;
+import com.qihoo360.utils.AMSUtils;
 import com.qihoo360.replugin.base.IPC;
 import com.qihoo360.replugin.component.process.PluginProcessHost;
 import com.qihoo360.replugin.helper.LogDebug;

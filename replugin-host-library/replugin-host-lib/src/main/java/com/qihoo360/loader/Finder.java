@@ -42,7 +42,7 @@ public class Finder {
 
         // 扫描V5插件
         File pluginDir = context.getDir(AppConstant.LOCAL_PLUGIN_SUB_DIR, 0);
-        V5Finder.search(context, pluginDir, all);
+        DownloadFinder.search(context, pluginDir, all);
 
         // 扫描现有插件，包括刚才从V5插件文件更新过来的文件
         HashSet<File> deleted = new HashSet<File>();

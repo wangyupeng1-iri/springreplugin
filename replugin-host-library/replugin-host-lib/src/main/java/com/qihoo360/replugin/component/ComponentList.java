@@ -32,7 +32,7 @@ import com.qihoo360.i.PluginFactory;
 import com.qihoo360.mobilesafe.parser.manifest.ManifestParser;
 import com.qihoo360.replugin.component.utils.ApkCommentReader;
 import com.qihoo360.replugin.component.utils.IntentMatcherHelper;
-import com.qihoo360.replugin.ext.parser.ApkParser;
+import com.qihoo360.utils.ext.parser.ApkParser;
 import com.qihoo360.replugin.helper.LogDebug;
 import com.qihoo360.replugin.model.PluginInfo;
 

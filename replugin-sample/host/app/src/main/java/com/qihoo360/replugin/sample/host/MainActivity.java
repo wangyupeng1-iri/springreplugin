@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.widget.TabHost;
 import android.widget.Toast;
 
 import com.qihoo360.replugin.RePlugin;
@@ -89,6 +90,13 @@ public class MainActivity extends Activity {
                 }, 1000);
             }
         });
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Toast.makeText(this, "Hello host v3.0.0", Toast.LENGTH_LONG).show();
     }
 
     private static final int REQUEST_CODE_DEMO1 = 0x011;

@@ -34,7 +34,7 @@ import com.qihoo360.mobilesafe.core.BuildConfig;
 import com.qihoo360.utils.ArrayMap;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.base.IPC;
-import com.qihoo360.replugin.base.ThreadUtils;
+import com.qihoo360.utils.ThreadUtils;
 import com.qihoo360.replugin.component.ComponentList;
 import com.qihoo360.replugin.component.utils.PluginClientHelper;
 import com.qihoo360.replugin.helper.LogDebug;
