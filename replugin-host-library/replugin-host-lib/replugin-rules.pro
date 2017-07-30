@@ -97,10 +97,6 @@
 -keep public class com.qihoo360.mobilesafe.api.Pref {
     public *;
 }
-# IPC
--keep public class com.qihoo360.mobilesafe.api.IPC {
-    public *;
-}
 # QihooServiceManager
 -keep public class com.qihoo360.mobilesafe.svcmanager.QihooServiceManager {
     public *;

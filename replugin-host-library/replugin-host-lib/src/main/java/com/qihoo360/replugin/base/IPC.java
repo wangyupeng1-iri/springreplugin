@@ -16,16 +16,21 @@
 
 package com.qihoo360.replugin.base;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Process;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
+import com.qihoo360.replugin.RePluginInternal;
+import com.qihoo360.utils.AMSUtils;
 import com.qihoo360.utils.SysUtils;
 import com.qihoo360.loader.PluginProcessMain;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.helper.LogDebug;
+
+import java.util.List;
 
 import static com.qihoo360.replugin.helper.LogDebug.LOG;
 import static com.qihoo360.replugin.helper.LogRelease.LOGR;
@@ -370,6 +375,41 @@ public class IPC {
         } catch (RemoteException e) {
             if (LOGR) {
                 e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+
+    public static final int getUIProcessPID(Context c) {
+        String pkg = c.getApplicationInfo().packageName;
+        return getRunningProcessPID(c, pkg);
+    }
+
+    public static final int getRunningProcessPID(Context c, String processName) {
+        List<ActivityManager.RunningAppProcessInfo> processes = AMSUtils.getRunningAppProcessesNoThrows(c);
+        if (processes != null) {
+            for (ActivityManager.RunningAppProcessInfo appInfo : processes) {
+                if (TextUtils.equals(appInfo.processName, processName)) {
+                    return appInfo.pid;
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * 判断当前包名是否在“运行进程列表”中
+     * @param packageName
+     * @return
+     */
+    public static final boolean isRunningProcess(String packageName) {
+        List<ActivityManager.RunningAppProcessInfo> processes = AMSUtils.getRunningAppProcessesNoThrows(RePluginInternal.getAppContext());
+        if (processes != null) {
+            for (ActivityManager.RunningAppProcessInfo appInfo : processes) {
+                if (TextUtils.equals(appInfo.processName, packageName)) {
+                    return true;
+                }
             }
         }
         return false;

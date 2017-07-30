@@ -31,7 +31,7 @@ android {
         versionName "1.0"
         versionCode 100
         targetSdkVersion 21
-        applicationId "com.qihoo360.replugin.sample.demo1"
+        applicationId "com.qihoo360.replugin.sample.demo3"
         minSdkVersion 15
     }
 

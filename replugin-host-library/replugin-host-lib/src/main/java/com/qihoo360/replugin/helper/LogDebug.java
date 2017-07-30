@@ -251,9 +251,9 @@ public class LogDebug {
     }
 
     /**
-     * @deprecated 为兼容卫士，以后干掉
+     * 插件状态
      */
-    public static final String PLUGIN_TAG = "ws001";
+    public static final String PLUGIN_TAG = "PluginState";
 
     /**
      * @deprecated 为兼容卫士，以后干掉

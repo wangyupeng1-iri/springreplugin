@@ -482,77 +482,12 @@ class PluginMgr {
         // 计算/获取cookie
         if (IPC.isPersistentProcess()) {
             mLocalCookie = PluginProcessMain.getPersistentCookie();
-        } else {
-//            try {
-//                mLocalCookie = PmCore.fetchPersistentCookie();
-//            } catch (RuntimeException e) {
-//                //
-//                LogDebug.i(PLUGIN_TAG, "catch exception: " + e.getMessage(), e);
-//                //
-//                String processName = mContext.getApplicationInfo().packageName + MobileSafeApplication.PERSIST_PROCESS_POSFIX;
-//                int uid = mContext.getApplicationInfo().uid;
-//                int flags = 0;
-//                List<ProviderInfo> providers = mContext.getPackageManager().queryContentProviders(processName, uid, flags);
-//                LogDebug.i(PLUGIN_TAG, "providers.size=" + (providers != null ? providers.size() : "null"));
-//                if (providers != null) {
-//                    for (ProviderInfo pi : providers) {
-//                        LogDebug.i(PLUGIN_TAG, "name=" + pi.name + " auth=" + pi.authority);
-//                    }
-//                }
-//                //
-//                throw e;
-//            }
         }
+
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "initial local cookie=" + mLocalCookie);
         }
 
-//        // 退出监控
-//        if (IPC.isPersistentProcess()) {
-//            // 异步通知，否则可能发生如下错误:
-//            //Attempt to invoke virtual method 'android.os.Looper android.content.Context.getMainLooper()' on a null object reference
-//            //java.lang.NullPointerException: Attempt to invoke virtual method 'android.os.Looper android.content.Context.getMainLooper()' on a null object reference
-//            //    at android.os.Parcel.readException(Parcel.java:1546)
-//            //    at android.os.Parcel.readException(Parcel.java:1493)
-//            //    at com.qihoo360.loader2.IPluginClient$Stub$Proxy.sendIntent(IPluginClient.java:165)
-//            //    at com.qihoo360.loader2.PmCore.sendIntent2Process(PmCore.java:386)
-//            //    at com.qihoo360.loader2.PluginManager.sendIntent2Process(PluginManager.java:1124)
-//            //    at com.qihoo360.loader2.RePluginOS.sendLocalBroadcast2All(RePluginOS.java:83)
-//            //    at com.qihoo360.mobilesafe.ui.index.IPC.sendLocalBroadcast2All(IPC.java:196)
-//            //    at com.qihoo360.mobilesafe.api.IPC.sendLocalBroadcast2All(IPC.java:131)
-//            Tasks.post2UI(new Runnable() {
-//
-//                @Override
-//                public void run() {
-//                    Intent intent = new Intent(ACTION_PERSISTENT_NEW_COOKIE);
-//                    intent.putExtra(KEY_COOKIE, mLocalCookie);
-//                    IPC.sendLocalBroadcast2All(mContext, intent);
-//                }
-//            });
-//        }
-//
-//        if (sPluginProcessIndex >= 0 && sPluginProcessIndex < AppConstant.STUB_PROCESS_COUNT) {
-//            IntentFilter filter = new IntentFilter(ACTION_PERSISTENT_NEW_COOKIE);
-//            LocalBroadcastManager.getInstance(mContext).registerReceiver(new BroadcastReceiver() {
-//
-//                @Override
-//                public void onReceive(Context context, Intent intent) {
-//                    if (ACTION_PERSISTENT_NEW_COOKIE.equals(intent.getAction())) {
-//                        long cookie = intent.getLongExtra(KEY_COOKIE, 0);
-//                        if (LOG) {
-//                            LogDebug.d(PLUGIN_TAG, "received cookie=" + cookie);
-//                        }
-//                        if (mLocalCookie != cookie) {
-//                            if (LOG) {
-//                                LogDebug.d(PLUGIN_TAG, "received new cookie=" + cookie + " old=" + mLocalCookie + " quit ...");
-//                            }
-//                            // 退出
-//                            System.exit(0);
-//                        }
-//                    }
-//                }
-//            }, filter);
-//        }
 
         if (!IPC.isPersistentProcess()) {
             // 由于常驻进程已经在内部做了相关的处理，此处仅需要在UI进程注册并更新即可
@@ -703,7 +638,7 @@ class PluginMgr {
                                 IPC.sendLocalBroadcast2All(context, new Intent("com.qihoo360.replugin.load_large_plugin.dismiss_dlg"));
                             }
                         }, 300);
-                        // IPC.sendLocalBroadcast2Process(context, IPC.getPersistentProcessName(), new Intent("com.qihoo360.replugin.load_large_plugin.dismiss_dlg"), )
+                        // OldIPC.sendLocalBroadcast2Process(context, OldIPC.getPersistentProcessName(), new Intent("com.qihoo360.replugin.load_large_plugin.dismiss_dlg"), )
                     }
                     return cls;
                 } catch (Throwable e) {
